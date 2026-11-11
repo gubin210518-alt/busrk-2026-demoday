@@ -1,0 +1,22 @@
+<section id="wiring" data-transition="fade" style="display:flex; flex-direction:column; padding:186px 96px 140px; background:#f3f3f5">
+  <p style="position:absolute; top:0; left:80px; width:120px; height:124px; padding:40px 0 0; font-family:'Gmarket Sans Bold', Arial, sans-serif; font-size:50px; line-height:1.2; text-align:center; color:#ffffff; background:linear-gradient(135deg, #5553c4 0%, #151faf 100%); border-radius:0 0 18px 18px">03</p>
+  <h2 style="position:absolute; top:40px; left:236px; width:1360px; font-family:'Gmarket Sans Bold', Arial, sans-serif; font-size:60px; font-weight:400; line-height:1.2; color:#052149">배선도: ESP32 보드 하나로 제어</h2>
+  <img src="/_blob/dba3852a01f57262b041004e2cf5c124" alt="AI동행 프로젝트 로고" style="position:absolute; top:34px; left:1660px; width:180px; height:81px; object-fit:contain">
+  <x-shape kind="line" style="position:absolute; top:146px; left:80px; width:1760px; height:2px; border:2px solid #dcdce2"></x-shape>
+  <p style="position:absolute; bottom:48px; left:160px; width:1600px; font-family:'Gmarket Sans Light', Arial, sans-serif; font-size:24px; text-align:center; color:#9e9e9e">2026년 AI동행 프로젝트 피지컬AI 분과 데모데이 예선 ㅣ p 11</p>
+  <div style="display:flex; flex-direction:row; gap:44px; align-items:center; flex:1; padding:40px 48px; background:#ffffff; border-radius:28px; box-shadow:0 8px 32px #141e5a14">
+    <img src="/_blob/05b81684366c6eb64170060cbfd8ec18" alt="ESP32 HW-394 보드를 USB-C가 위로 오게 그린 배선도: 왼쪽 핀 D4에 온도센서, D18에 서보, D19에 MOSFET과 팬, D21·D22에 OLED, 오른쪽 핀 D27에 리드스위치, D26·D33·D32에 신호등 LED, D25에 부저. 3V3·GND는 3.3V 줄, VIN·GND는 5V 줄" style="width:910px; height:638px; background:#ffffff; border:1px solid #e3e6ee; border-radius:16px; object-fit:contain">
+    <div style="display:flex; flex-direction:column; gap:22px; flex:1">
+      <h3 style="font-family:'Gmarket Sans Bold', Arial, sans-serif; font-size:34px; font-weight:400; line-height:1.25; color:#121ba9">배선의 핵심</h3>
+      <ul style="font-family:'Gmarket Sans Medium', Arial, sans-serif; font-size:26px; line-height:1.5; color:#1a2635">
+        <li>USB-C가 위로 오게 꽂고, 핀 이름은 보드 인쇄(D4 = GPIO4)를 따른다</li>
+        <li>온도센서 2개는 D4 한 선에 병렬, 4.7kΩ 풀업 1개</li>
+        <li>3V3·GND는 가운데 왼쪽 전원 줄(3.3V), VIN·GND는 오른쪽 전원 줄(5V)</li>
+        <li>서보와 팬은 5V, 센서와 표시부는 3.3V</li>
+        <li>팬은 MOSFET 모듈(D19)로 제어하고 1N5819로 보호</li>
+        <li>부팅에 영향을 주는 D2·D5·D12·D15와 RX0·TX0은 비운다</li>
+      </ul>
+    </div>
+  </div>
+  <aside>배선도입니다. 실제로 쓰는 ESP32 보드를 USB-C가 위로 오게 그렸고, 핀 이름도 보드에 인쇄된 대로 적었습니다. 보드의 D4가 코드의 GPIO4입니다. 온도센서 두 개는 D4 한 선에 병렬로 연결하고 4.7킬로옴 풀업 저항을 하나 겁니다. 브레드보드 가운데 전원 줄 두 쌍 중 왼쪽 쌍은 3V3과 GND를 꽂아 3.3볼트 줄로, 오른쪽 쌍은 VIN과 GND를 꽂아 5볼트 줄로 씁니다. 서보와 팬은 5볼트, 센서와 표시부는 3.3볼트를 씁니다. 팬은 MOSFET 모듈로 제어하고 다이오드로 역전압을 막습니다. 부팅에 영향을 주는 핀과 업로드에 쓰는 RX0, TX0은 비워 두었습니다.</aside>
+</section>

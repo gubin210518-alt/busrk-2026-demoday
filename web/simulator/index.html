@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>부스럭 AI 시뮬레이터</title>
+<style>
+:root{
+  --bg:#F3F3F5; --card:#FFFFFF; --ink:#052149; --text:#1A2635; --muted:#6B7385; --line:#E3E6EE;
+  --blue:#151FAF; --blue2:#5553C4; --soft:#F1F2FB; --accent:#5E68ED;
+  --green:#2E9E6B; --yellow:#E0A21B; --red:#C9372C; --cold:#1F8FD6;
+  --shadow:0 8px 28px rgba(20,30,90,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;font-size:15px}
+button,input,select{font:inherit}
+.top{background:linear-gradient(100deg,var(--blue2),var(--blue));color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-weight:800;font-size:19px;letter-spacing:-.3px}
+.brand small{display:block;font-weight:500;font-size:12px;opacity:.8;letter-spacing:0}
+.top .sp{flex:1}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.14);font-size:13px}
+.dot{width:9px;height:9px;border-radius:50%;background:#9aa}
+.dot.on{background:#5BE39A;box-shadow:0 0 0 3px rgba(91,227,154,.25)}
+.dot.sim{background:#FFC857}
+.btn{border:0;border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:700;background:var(--soft);color:var(--blue)}
+.btn:hover{filter:brightness(.97)}
+.btn.pri{background:var(--blue);color:#fff}
+.top .btn{background:rgba(255,255,255,.16);color:#fff}
+.top .btn.pri{background:#fff;color:var(--blue)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.tabs{display:flex;gap:4px;padding:12px 24px 0;flex-wrap:wrap}
+.tab{border:0;background:none;padding:10px 16px;border-radius:10px 10px 0 0;cursor:pointer;color:var(--muted);font-weight:700}
+.tab.on{background:var(--card);color:var(--blue)}
+main{padding:0 24px 32px}
+.panel{display:none;background:var(--card);border-radius:0 16px 16px 16px;box-shadow:var(--shadow);padding:22px}
+.panel.on{display:block}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.tile{background:var(--soft);border-radius:14px;padding:14px 16px;min-width:0}
+.tile .k{font-size:13px;color:var(--accent);font-weight:700}
+.tile .v{font-size:32px;font-weight:800;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tile .s{font-size:12.5px;color:var(--muted);margin-top:2px}
+.status{display:flex;align-items:center;gap:14px}
+.status>div:last-child{min-width:0}
+#vL{white-space:normal}
+.lights{display:flex;gap:6px;background:#1d2433;padding:7px 8px;border-radius:99px}
+.lights i{width:18px;height:18px;border-radius:50%;background:#3a4252;display:block}
+.lights i.r.on{background:#FF4D3D;box-shadow:0 0 10px #FF4D3D}
+.lights i.y.on{background:#FFC23D;box-shadow:0 0 10px #FFC23D}
+.lights i.g.on{background:#45E08F;box-shadow:0 0 10px #45E08F}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row label{font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+input[type=number],select{width:84px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--text)}
+h3{margin:0 0 10px;color:var(--ink);font-size:17px}
+.card{border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+canvas{width:100%;display:block}
+.eta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.eta .tile .v{font-size:26px}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:700;background:var(--soft);color:var(--blue)}
+.badge.warn{background:#FFF3D6;color:#8A5A00}
+.badge.sim{background:#FFF3D6;color:#8A5A00}
+.badge.real{background:#E3F6EC;color:#1D6B47}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{color:var(--muted);font-weight:700;font-size:12.5px}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+th.ctr,td.ctr{text-align:center}
+.tablewrap{overflow-x:auto}
+.note{font-size:13px;color:var(--muted);line-height:1.6}
+.callout{background:#FFF8E6;border:1px solid #F5DFA6;color:#6B4A00;border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.6}
+.callout.ok{background:#EAF7F0;border-color:#BFE6D0;color:#1D5B3D}
+.bars .b{display:grid;grid-template-columns:130px 1fr 90px;gap:10px;align-items:center;margin:8px 0}
+.bars .track{height:22px;background:var(--soft);border-radius:6px;overflow:hidden}
+.bars .fill{height:100%;border-radius:6px}
+pre{background:#0F1630;color:#DDE3FF;padding:14px;border-radius:12px;overflow:auto;font-size:12.5px;line-height:1.5;max-height:360px}
+.console{height:120px;overflow:auto;background:#0F1630;color:#AEB9E8;font:12px/1.5 ui-monospace,Consolas,monospace;padding:8px 10px;border-radius:10px;margin-top:8px}
+.steps{margin:0;padding-left:20px;line-height:1.9}
+.hide{display:none!important}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:18px;height:3px;border-radius:2px;display:inline-block}
+@media (max-width:900px){#liveGrid{grid-template-columns:minmax(0,1fr)!important}.bars .b{grid-template-columns:96px 1fr 64px}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3,.g2{grid-template-columns:minmax(0,1fr)}main,.tabs{padding-left:12px;padding-right:12px}.top{padding:12px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">부스럭 예냉박스 · AI 시뮬레이터<small>식품의 골든타임을 지키는 예냉박스 — 학습 모델 만들기와 실시간 모니터</small></div>
+  <div class="sp"></div>
+  <a class="btn" href="https://busrk-box3d.netlify.app/about.html" style="text-decoration:none">← 홈페이지</a>
+  <span class="pill"><span class="dot" id="connDot"></span><span id="connText">연결 안 됨</span></span>
+  <button class="btn pri" id="btnConnect">ESP32 연결</button>
+  <button class="btn" id="btnSim">시뮬레이션 시작</button>
+  <button class="btn" id="btnReset" title="새 딸기를 넣었을 때 시간을 0분부터 다시 셉니다">새 딸기 시작</button>
+</header>
+
+<nav class="tabs">
+  <button class="tab on" data-tab="live">실시간</button>
+  <button class="tab" data-tab="data">실험 기록</button>
+  <button class="tab" data-tab="train">AI 학습</button>
+  <button class="tab" data-tab="export">펌웨어로 보내기</button>
+  <button class="tab" data-tab="help">사용법</button>
+</nav>
+
+<main>
+<!-- 실시간 -->
+<section class="panel on" id="tab-live">
+  <div class="grid g4">
+    <div class="tile"><div class="k">식품칸 온도</div><div class="v" id="vB">--.-℃</div><div class="s" id="vBs">목표 1℃</div></div>
+    <div class="tile"><div class="k">냉기실 온도</div><div class="v" id="vC">--.-℃</div><div class="s" id="vCs">팬 -- · 뚜껑 --</div></div>
+    <div class="tile"><div class="k">수확 후 경과</div><div class="v" id="vT">0:00</div><div class="s" id="vTs">제한 60분</div></div>
+    <div class="tile status"><div class="lights"><i class="r" id="lR"></i><i class="y" id="lY"></i><i class="g" id="lG"></i></div>
+      <div><div class="k">박스 판단</div><div class="v" style="font-size:24px" id="vL">대기</div><div class="s" id="vLs">연결하거나 시뮬레이션을 시작하세요</div></div></div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);margin-top:14px" id="liveGrid">
+    <div class="card">
+      <div class="row" style="justify-content:space-between"><h3 style="margin:0">온도 그래프와 AI 예측</h3>
+        <div class="row"><label>목표 <input type="number" id="target" value="1" step="0.5">℃</label>
+        <label>제한 <input type="number" id="deadline" value="60" step="5">분</label></div></div>
+      <canvas id="chart" height="340"></canvas>
+      <div class="legend"><span><i style="background:var(--red)"></i>식품칸</span><span><i style="background:var(--cold)"></i>냉기실</span>
+        <span><i style="background:var(--accent);height:0;border-top:3px dashed var(--accent)"></i>AI 예측 경로</span>
+        <span><i style="background:#2E9E6B;height:0;border-top:2px dashed #2E9E6B"></i>목표 온도</span>
+        <span><i style="background:#999;height:0;border-top:2px dashed #999"></i>제한 시간</span></div>
+    </div>
+    <div class="grid" style="align-content:start">
+      <div class="card">
+        <h3>목표까지 남은 시간 예측</h3>
+        <div class="eta">
+          <div class="tile"><div class="k">AI 학습 모델</div><div class="v" id="eA">--</div><div class="s" id="eAs">2분 기록 후 계산</div></div>
+          <div class="tile"><div class="k">뉴턴 계산식</div><div class="v" id="eN">--</div><div class="s" id="eNs">2분 기록 후 계산</div></div>
+        </div>
+        <p class="note" id="etaNote" style="margin:10px 0 0">예측은 PC 프로그램 안의 현재 모델로 계산합니다.</p>
+      </div>
+      <div class="card" id="simCard">
+        <h3>시뮬레이션 설정</h3>
+        <div class="row"><label>배속 <select id="simSpeed"><option value="30">30배</option><option value="60" selected>60배</option><option value="120">120배</option><option value="300">300배</option></select></label>
+          <button class="btn" id="btnLid">뚜껑 열기</button></div>
+        <p class="note" style="margin:8px 0 0">시뮬레이션은 가정한 계수로 만든 가상 상자예요. 실제 측정이 아니에요.</p>
+      </div>
+      <div class="card">
+        <div class="row" style="justify-content:space-between"><h3 style="margin:0">ESP32 메시지</h3><button class="btn" id="btnModelInfo" style="padding:5px 10px">모델 확인</button></div>
+        <div class="console" id="console"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 실험 기록 -->
+<section class="panel" id="tab-data">
+  <div class="row" style="justify-content:space-between;margin-bottom:12px">
+    <h3 style="margin:0">실험 기록 <span class="note" id="runCount"></span></h3>
+    <div class="row">
+      <label class="btn" style="cursor:pointer">CSV 불러오기<input type="file" id="fileIn" accept=".csv,.txt" multiple hidden></label>
+      <label>시뮬레이션 <input type="number" id="simN" value="30" min="1" max="200">개</label>
+      <button class="btn" id="btnGen">가상 실험 만들기</button>
+      <button class="btn" id="btnDelSim">가상 실험 모두 삭제</button>
+    </div>
+  </div>
+  <div class="tablewrap"><table>
+    <thead><tr><th class="ctr">학습</th><th>이름</th><th class="ctr">종류</th><th class="num">길이</th><th class="num">시작 온도</th><th class="num">가장 낮은 온도</th><th class="num">목표 도달</th><th></th></tr></thead>
+    <tbody id="runBody"></tbody>
+  </table></div>
+  <p class="note">ESP32를 연결하면 기록이 자동으로 쌓이고, 새 딸기를 시작하거나 ESP32가 다시 켜지면 새 실험으로 나뉩니다. 박스에 저장된 log.csv(시리얼 모니터에서 <b>d</b> 입력 후 복사)도 불러올 수 있어요. 기록은 이 브라우저에 저장됩니다.</p>
+</section>
+
+<!-- AI 학습 -->
+<section class="panel" id="tab-train">
+  <div class="grid g2">
+    <div class="card">
+      <h3>학습 설정</h3>
+      <div class="row">
+        <label>평가 목표 온도 <input type="number" id="evalTarget" value="1" step="0.5">℃</label>
+        <label title="AI가 학습 데이터에만 너무 딱 맞춰지는 것(과적합)을 막는 값이에요. 뉴턴 냉각 법칙과는 관계없어요.">과적합 방지 λ <input type="number" id="lambda" value="1" step="0.5" min="0"></label>
+        <button class="btn pri" id="btnTrain">학습하기</button>
+      </div>
+      <p class="note">λ(릿지 규제): 가중치가 지나치게 커지지 않게 눌러 주는 값이에요. 기록이 적을수록 조금 키우면(예: 5) 안정적이고, 0이면 일반 선형 회귀예요. 보통 1 그대로 두면 됩니다.<br>체크한 실험 중 5개마다 1개는 시험용으로 빼 두고, 나머지로 학습합니다. 시험용 실험에서 목표에 실제로 닿은 시각과 예측을 비교합니다.</p>
+      <div id="trainMsg"></div>
+    </div>
+    <div class="card">
+      <h3>이 AI는 무엇을 배우나</h3>
+      <p class="note" style="margin:0">입력 4가지: 식품칸−냉기실 온도 차, 냉기실 온도, 식품칸이 최근 2분 동안 식은 속도, 냉기실이 최근 2분 동안 변한 속도.<br>
+      출력 2가지: 2분 뒤 식품칸 온도 변화, 2분 뒤 냉기실 온도 변화 (선형 회귀, 릿지 규제).<br>
+      예측할 때는 이 모델을 2분씩 반복해서 목표 온도에 닿는 시각을 찾습니다. 아이스팩이 녹아 냉기가 약해지는 것, 딸기 덩어리가 공기보다 늦게 식는 것을 기록에서 배울 수 있어요.</p>
+    </div>
+  </div>
+  <div id="trainResult" class="hide" style="margin-top:14px">
+    <div class="grid g4">
+      <div class="tile"><div class="k">학습 표본</div><div class="v" id="rN">-</div><div class="s" id="rNs"></div></div>
+      <div class="tile"><div class="k">2분 뒤 온도 오차</div><div class="v" id="rFit">-</div><div class="s">식품칸, 학습 데이터 기준</div></div>
+      <div class="tile"><div class="k">시험 실험</div><div class="v" id="rTest">-</div><div class="s" id="rTests"></div></div>
+      <div class="tile"><div class="k">판정 (성공 기준 4)</div><div class="v" id="rPass" style="font-size:24px">-</div><div class="s">AI 오차 &lt; 직선, 뉴턴</div></div>
+    </div>
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card"><h3>남은 시간 예측 오차 (평균, 분)</h3><div class="bars" id="bars"></div>
+        <p class="note" id="evalNote"></p></div>
+      <div class="card"><h3>학습된 가중치</h3><div class="tablewrap"><table id="wTable"></table></div>
+        <p class="note">표준화한 입력 기준 가중치예요. 절댓값이 클수록 그 입력이 예측에 크게 작용합니다.</p></div>
+    </div>
+    <div class="row" style="margin-top:14px"><button class="btn pri" id="btnUse">이 모델을 사용하기</button><span class="note" id="useNote"></span></div>
+  </div>
+</section>
+
+<!-- 내보내기 -->
+<section class="panel" id="tab-export">
+  <div class="row" style="justify-content:space-between;margin-bottom:10px">
+    <h3 style="margin:0">model.h <span class="badge" id="modelBadge"></span></h3>
+    <div class="row">
+      <button class="btn pri" id="btnDlH">model.h 내려받기</button>
+      <button class="btn" id="btnCopyH">복사</button>
+      <button class="btn" id="btnDlJ">모델 저장(.json)</button>
+      <label class="btn" style="cursor:pointer">모델 불러오기<input type="file" id="modelIn" accept=".json" hidden></label>
+      <button class="btn" id="btnDefault">기본 모델로</button>
+    </div>
+  </div>
+  <pre id="hOut"></pre>
+  <ol class="steps note">
+    <li><b>precool_ai.ino</b>(또는 precool_ai_demo.ino)를 열고, 코드 안 <b>"학습 모델 (model.h)"</b> 블록의 MODEL_READY부터 MODEL_WC까지를 위 내용으로 바꿉니다.</li>
+    <li>Arduino IDE에서 <b>precool_ai.ino</b>를 열고 보드를 "ESP32 Dev Module"로 고른 뒤 업로드합니다.</li>
+    <li>시리얼 모니터(115200)에 <b>m</b>을 입력하거나, 이 프로그램의 "모델 확인"을 누르면 들어간 모델 정보가 나옵니다.</li>
+  </ol>
+</section>
+
+<!-- 사용법 -->
+<section class="panel" id="tab-help">
+  <div class="grid g2">
+    <div class="card"><h3>처음 한 번</h3><ol class="steps note">
+      <li>크롬이나 엣지로 이 파일을 엽니다. (ESP32 연결은 이 두 브라우저에서만 돼요)</li>
+      <li><b>precool_ai.ino</b>(대회 시연은 precool_ai_demo.ino)를 ESP32에 업로드합니다. 코드는 <a href="https://busrk-box3d.netlify.app/code.html">소스코드 페이지</a>에서 받아요.</li>
+      <li>업로드가 끝나면 Arduino 시리얼 모니터를 닫습니다. (포트를 한 프로그램만 쓸 수 있어요)</li>
+      <li>"ESP32 연결"을 누르고 포트를 고릅니다. 10초마다 온도가 들어옵니다.</li>
+    </ol></div>
+    <div class="card"><h3>AI를 실제 기록으로 다시 학습하기</h3><ol class="steps note">
+      <li>실온 딸기를 넣고 팬이 켜진 상태로 실험을 여러 번 합니다. 회차마다 "새 딸기 시작"을 누릅니다.</li>
+      <li>"실험 기록"에서 실측 기록만 체크합니다. (가상 실험은 빼기)</li>
+      <li>"AI 학습"에서 학습하기 → 오차 비교 확인 → "이 모델을 사용하기".</li>
+      <li>"펌웨어로 보내기"에서 model.h를 받아 다시 업로드합니다.</li>
+    </ol></div>
+    <div class="card"><h3>하드웨어 없이 보여 줄 때</h3><p class="note" style="margin:0">"시뮬레이션 시작"을 누르면 가상 상자가 빠르게 식는 모습과 AI 예측 경로가 그래프에 나옵니다. "뚜껑 열기"로 뚜껑을 열었을 때 냉각이 멈추는 것도 볼 수 있어요. 가상 상자의 계수는 가정한 값이므로, 발표에서 실측 결과처럼 말하면 안 됩니다.</p></div>
+    <div class="card"><h3>연결이 안 될 때</h3><ul class="steps note">
+      <li>포트 목록이 비어 있으면 USB 케이블(데이터용인지)과 CP210x/CH340 드라이버를 확인하세요.</li>
+      <li>"이미 사용 중" 오류는 Arduino 시리얼 모니터를 닫으면 해결돼요.</li>
+      <li>연결 버튼이 안 되면 크롬이나 엣지 최신 버전인지 확인하세요. 파일로 내려받아 열었다면 <code>python -m http.server</code> 실행 후 http://localhost:8000 으로 여세요.</li>
+    </ul></div>
+  </div>
+</section>
+</main>
+
+<script>
+// ===== 부스럭 예냉박스 AI 코어 (브라우저/Node 공용) =====
+const AI = (() => {
+  const DT = 10 / 60;          // 격자 간격: 10초 (분 단위)
+  const H = 2;                 // 예측 한 걸음: 2분
+  const LAG = 12;              // 2분 = 10초 x 12
+  const NF = 4;                // 특징: [식품칸-냉기, 냉기, 식품칸 2분기울기, 냉기 2분기울기]
+
+  // 기록(가변 간격) -> 10초 격자로 선형보간
+  function resample(rows) {
+    // rows: [{t, b, c, lid, fan}] (t 분)
+    const r = rows.filter(x => isFinite(x.t) && isFinite(x.b)).sort((a, b) => a.t - b.t);
+    if (r.length < 2) return [];
+    const out = []; let j = 0;
+    for (let t = r[0].t; t <= r[r.length - 1].t + 1e-9; t += DT) {
+      while (j < r.length - 2 && r[j + 1].t < t) j++;
+      const a = r[j], z = r[j + 1];
+      const u = z.t > a.t ? Math.min(1, Math.max(0, (t - a.t) / (z.t - a.t))) : 0;
+      const lerp = (p, q) => (isFinite(p) && isFinite(q)) ? p + (q - p) * u : NaN;
+      const near = u < 0.5 ? a : z;
+      out.push({ t, b: lerp(a.b, z.b), c: lerp(a.c, z.c), lid: near.lid ? 1 : 0, fan: near.fan === 0 ? 0 : 1 });
+    }
+    return out;
+  }
+
+  function feat(b, c, sb, sc) { return [b - c, c, sb, sc]; }
+
+  // 학습용 표본: 격자 i에서 [i-12, i+12] 동안 팬 켜짐·뚜껑 닫힘·값 정상
+  function samples(g) {
+    const X = [], YB = [], YC = [];
+    for (let i = LAG; i + LAG < g.length; i++) {
+      let ok = true;
+      for (let k = i - LAG; k <= i + LAG; k++) {
+        const s = g[k];
+        if (!s.fan || s.lid || !isFinite(s.b) || !isFinite(s.c)) { ok = false; break; }
+      }
+      if (!ok) continue;
+      const p = g[i - LAG], s = g[i], f = g[i + LAG];
+      X.push(feat(s.b, s.c, (s.b - p.b) / H, (s.c - p.c) / H));
+      YB.push(f.b - s.b); YC.push(f.c - s.c);
+    }
+    return { X, YB, YC };
+  }
+
+  function solve(A, y) { // 가우스 소거 (부분 피벗)
+    const n = y.length, M = A.map((r, i) => [...r, y[i]]);
+    for (let c = 0; c < n; c++) {
+      let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+      [M[c], M[p]] = [M[p], M[c]];
+      for (let r = 0; r < n; r++) if (r !== c) {
+        const f = M[r][c] / M[c][c]; for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k];
+      }
+    }
+    return M.map((r, i) => r[n] / r[i]);
+  }
+
+  // 릿지 회귀 (표준화 후). w[0]=절편
+  function ridge(Z, y, lam) {
+    const n = Z[0].length + 1, A = Array.from({ length: n }, () => Array(n).fill(0)), v = Array(n).fill(0);
+    for (let i = 0; i < Z.length; i++) {
+      const z = [1, ...Z[i]];
+      for (let a = 0; a < n; a++) { v[a] += z[a] * y[i]; for (let b = 0; b < n; b++) A[a][b] += z[a] * z[b]; }
+    }
+    for (let a = 1; a < n; a++) A[a][a] += lam;
+    return solve(A, v);
+  }
+
+  function train(grids, opt = {}) {
+    let X = [], YB = [], YC = [];
+    for (const g of grids) { const s = samples(g); X = X.concat(s.X); YB = YB.concat(s.YB); YC = YC.concat(s.YC); }
+    if (X.length < 30) throw new Error('학습할 표본이 부족해요 (' + X.length + '개). 팬이 켜진 채 5분 이상 기록된 실험이 더 필요해요.');
+    const mean = Array(NF).fill(0), std = Array(NF).fill(0);
+    for (const x of X) x.forEach((v, k) => mean[k] += v / X.length);
+    for (const x of X) x.forEach((v, k) => std[k] += (v - mean[k]) ** 2 / X.length);
+    for (let k = 0; k < NF; k++) std[k] = Math.sqrt(std[k]) || 1;
+    const Z = X.map(x => x.map((v, k) => (v - mean[k]) / std[k]));
+    const lam = opt.lambda ?? 1.0;
+    const wb = ridge(Z, YB, lam), wc = ridge(Z, YC, lam);
+    const m = { v: 1, H, mean, std, wb, wc, n: X.length, runs: grids.length, note: opt.note || '' };
+    // 학습 오차 (2분 뒤 온도 변화, ℃)
+    let eb = 0, ec = 0;
+    Z.forEach((z, i) => { eb += Math.abs(lin(wb, z) - YB[i]); ec += Math.abs(lin(wc, z) - YC[i]); });
+    m.fitMaeB = eb / Z.length; m.fitMaeC = ec / Z.length;
+    return m;
+  }
+
+  function lin(w, z) { let s = w[0]; for (let k = 0; k < z.length; k++) s += w[k + 1] * z[k]; return s; }
+  function step(m, b, c, sb, sc) {
+    const z = feat(b, c, sb, sc).map((v, k) => (v - m.mean[k]) / m.std[k]);
+    return [lin(m.wb, z), lin(m.wc, z)];
+  }
+
+  // AI 예측: 목표까지 남은 분. -2 = 180분 안에 못 닿음(또는 더 안 식음)
+  function etaAI(m, b, c, sb, sc, target, path) {
+    if (b <= target) return 0;
+    let t = 0;
+    if (path) path.push([0, b, c]);
+    for (let s = 0; s < 90; s++) {
+      const [db, dc] = step(m, b, c, sb, sc);
+      const nb = b + db, nc = c + dc;
+      if (path) path.push([t + H, nb, nc]);
+      if (nb <= target) return t + H * (b - target) / (b - nb);
+      if (db > -0.005) return -2;
+      b = nb; c = nc; sb = db / H; sc = dc / H; t += H;
+    }
+    return -2;
+  }
+
+  // ---- 펌웨어와 같은 뉴턴/직선 예측 (최근 10분, 2분 이상 모였을 때) ----
+  function fitSlope(x, y) {
+    const n = x.length; if (n < 2) return null;
+    let mx = 0, my = 0; for (let i = 0; i < n; i++) { mx += x[i]; my += y[i]; } mx /= n; my /= n;
+    let sxx = 0, sxy = 0; for (let i = 0; i < n; i++) { const d = x[i] - mx; sxx += d * d; sxy += d * (y[i] - my); }
+    return sxx > 0 ? sxy / sxx : null;
+  }
+  function etaNewton(hist, target) { // hist: 최근 10분 [{t,b,c}]
+    const n = hist.length, last = hist[n - 1];
+    if (n < 12) return { eta: -1, m: '-' };
+    if (last.b <= target) return { eta: 0, m: 'N' };
+    const cs = hist.filter(h => isFinite(h.c));
+    if (cs.length >= n * 0.8) {
+      const tc = cs.reduce((s, h) => s + h.c, 0) / cs.length;
+      const xs = [], ys = [];
+      for (const h of hist) { const d = h.b - tc; if (d > 0.3) { xs.push(h.t); ys.push(Math.log(d)); } }
+      const k = xs.length >= 12 ? fitSlope(xs, ys) : null;
+      if (k !== null && -k > 0.001) {
+        if (target <= tc + 0.2) return { eta: -2, m: 'N' };
+        return { eta: Math.log((last.b - tc) / (target - tc)) / -k, m: 'N' };
+      }
+    }
+    const s = fitSlope(hist.map(h => h.t), hist.map(h => h.b));
+    if (s !== null && s < -0.01) return { eta: (last.b - target) / -s, m: 'L' };
+    return { eta: -1, m: '-' };
+  }
+  function etaLinear(hist, target) {
+    if (hist.length < 12) return -1;
+    const last = hist[hist.length - 1]; if (last.b <= target) return 0;
+    const s = fitSlope(hist.map(h => h.t), hist.map(h => h.b));
+    return (s !== null && s < -0.01) ? (last.b - target) / -s : -2;
+  }
+
+  // ---- 평가: 실제로 목표에 닿은 실험에서, 닿기 전 매 30초마다 남은 시간 예측 오차 ----
+  function evaluate(m, grids, target, cap = 180) {
+    const res = { ai: [], newton: [], linear: [], runsUsed: 0, warnAI: [0, 0, 0, 0] };
+    for (const g of grids) {
+      const hit = g.findIndex(s => s.b <= target);
+      if (hit < 0) continue;
+      res.runsUsed++;
+      const T = g[hit].t;
+      for (let i = LAG; i < hit; i += 3) {
+        const s = g[i], p = g[i - LAG];
+        const truth = T - s.t;
+        const hist = g.slice(Math.max(0, i - 59), i + 1);
+        const pen = e => (e < 0 ? cap : Math.min(e, cap));
+        res.ai.push(Math.abs(pen(etaAI(m, s.b, s.c, (s.b - p.b) / H, (s.c - p.c) / H, target)) - truth));
+        res.newton.push(Math.abs(pen(etaNewton(hist, target).eta) - truth));
+        res.linear.push(Math.abs(pen(etaLinear(hist, target)) - truth));
+      }
+    }
+    const mae = a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : NaN;
+    return { maeAI: mae(res.ai), maeNewton: mae(res.newton), maeLinear: mae(res.linear), points: res.ai.length, runsUsed: res.runsUsed };
+  }
+
+  // ---- 시뮬레이터: 식품칸 공기(측정) / 딸기 덩어리(측정 안 됨) / 냉기실(측정) / 아이스팩 ----
+  // 계수는 그럴듯한 범위에서 무작위로 뽑은 가정값이에요. 실제 측정값이 아니에요.
+  function rng(seed) { let s = seed >>> 0 || 1; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+  function simParams(rand) {
+    const R = (a, b) => a + (b - a) * rand();
+    const amb = R(18, 30);
+    return {
+      amb, A0: amb + R(-2, 3), M0: amb + R(-1, 4), C0: R(-1, 6), ice: R(-8, -2), iceCap: R(150, 600),
+      kf: R(0.15, 0.45), km: R(0.08, 0.3), kmm: R(0.03, 0.09), ki: R(0.1, 0.4), kl: R(0.002, 0.012),
+      noise: 0.04
+    };
+  }
+  function simStep(st, p, dt, fan, lid, rand) {
+    const kf = fan ? p.kf : p.kf * 0.12, open = lid ? 0.25 : 0;
+    const dA = -kf * (st.A - st.C) - p.km * (st.A - st.M) - (p.kl + open) * (st.A - p.amb);
+    const dM = -p.kmm * (st.M - st.A);
+    const iceT = st.cap > 0 ? p.ice * Math.min(1, st.cap / (p.iceCap * 0.3)) : st.I;
+    const q = p.ki * (st.C - iceT);
+    const dC = -q + kf * 0.35 * (st.A - st.C) - p.kl * 1.5 * (st.C - p.amb);
+    st.A += dA * dt; st.M += dM * dt; st.C += dC * dt;
+    if (st.cap > 0) { st.cap -= q * dt * 3; st.I = iceT; } else { st.I += 0.05 * (st.C - st.I) * dt; }
+    st.t += dt;
+  }
+  function q16(x) { return Math.round(x * 16) / 16; } // DS18B20 0.0625℃
+  function simulateRun(seed, minutes = 90, opt = {}) {
+    const rand = rng(seed), p = simParams(rand);
+    const st = { t: 0, A: p.A0, M: p.M0, C: p.C0, cap: p.iceCap, I: p.ice };
+    const rows = [], dt = 1 / 60;
+    const target = opt.target ?? 1;
+    let done = false;
+    for (let i = 0; i <= minutes * 60; i++) {
+      if (i % 10 === 0) {
+        const n = () => (rand() - 0.5) * 2 * p.noise;
+        rows.push({ t: st.t, b: q16(st.A + n()), c: q16(st.C + n()), lid: 0, fan: done ? 0 : 1 });
+      }
+      if (opt.stopAtTarget && st.A <= target) done = true;
+      simStep(st, p, dt, !done, false, rand);
+    }
+    return { rows, params: p };
+  }
+
+  function toHeader(m) {
+    const f = a => a.map(v => (Math.abs(v) < 1e-12 ? 0 : v).toPrecision(8) + 'f').join(', ');
+    const d = new Date().toISOString().slice(0, 16).replace('T', ' ');
+    return `// model.h — 부스럭 예냉박스 학습 모델 (AI 스튜디오에서 자동 생성)
+// 만든 시각: ${d} UTC
+// 학습 데이터: 실험 ${m.runs}개, 학습 표본 ${m.n}개 ${m.note ? '(' + m.note + ')' : ''}
+// 2분 뒤 온도 변화 학습 오차: 식품칸 ${m.fitMaeB.toFixed(3)}℃, 냉기실 ${m.fitMaeC.toFixed(3)}℃
+// 특징 순서: [식품칸-냉기실, 냉기실, 식품칸 2분 기울기(℃/분), 냉기실 2분 기울기(℃/분)]
+#pragma once
+#define MODEL_READY 1
+#define MODEL_H_MIN ${m.H.toFixed(1)}f
+static const char MODEL_INFO[] = "runs=${m.runs} n=${m.n}${m.note ? ' ' + m.note.replace(/[^A-Za-z0-9 _.-]/g, '') : ''}";
+static const float MODEL_MEAN[4] = { ${f(m.mean)} };
+static const float MODEL_STD[4]  = { ${f(m.std)} };
+static const float MODEL_WB[5]   = { ${f(m.wb)} };  // 식품칸 2분 뒤 변화: 절편 + 가중치 4개
+static const float MODEL_WC[5]   = { ${f(m.wc)} };  // 냉기실 2분 뒤 변화
+`;
+  }
+
+  return { toHeader, DT, H, LAG, resample, samples, train, step, etaAI, etaNewton, etaLinear, evaluate, simulateRun, simParams, simStep, rng, q16 };
+})();
+if (typeof module !== 'undefined') module.exports = AI;
+
+</script>
+<script>
+const DEFAULT_MODEL = {"v":1,"H":2,"mean":[4.607229206963261,-1.095621776273391,-0.23671320921986674,-0.054210992907795665],"std":[3.332127533137526,2.8593340959875997,0.47531227992273206,0.14640631215310837],"wb":[-0.3482450838168935,-0.07402196412946314,-0.007484268013323335,0.36901834664704863,0.09949697917840343],"wc":[-0.10110412637007836,0.0006190943417828311,-0.01095517218612709,0.08426006922020703,0.1438261766716772],"n":31020,"runs":60,"note":"simulation pretrain - retrain with real logs","fitMaeB":0.0641726433586587,"fitMaeC":0.05487585382814477};
+// ---------------- 상태 ----------------
+const $ = id => document.getElementById(id);
+const S = {
+  mode: 'idle',            // idle | serial | sim
+  model: load('bsr_model') || DEFAULT_MODEL,
+  runs: load('bsr_runs') || [],
+  live: [],                // 현재 실험 [{t,b,c,lid,fan,lvl,eN,eA}]
+  liveName: null,
+  fw: null,                // ESP32가 보낸 마지막 값
+  trained: null,
+  port: null, reader: null, writer: null,
+  sim: null,
+};
+function load(k){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
+function save(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+const target = () => parseFloat($('target').value) || 1;
+const deadline = () => parseFloat($('deadline').value) || 60;
+const fmt = (v, d=1) => isFinite(v) ? v.toFixed(d) : '--';
+
+// ---------------- 탭 ----------------
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'tab-' + b.dataset.tab));
+  if (b.dataset.tab === 'live') drawChart();
+  if (b.dataset.tab === 'data') renderRuns();
+  if (b.dataset.tab === 'export') renderExport();
+});
+
+function log(msg){ const c = $('console'); c.textContent += msg + '\n'; if (c.textContent.length > 20000) c.textContent = c.textContent.slice(-15000); c.scrollTop = c.scrollHeight; }
+
+// ---------------- 실험 관리 ----------------
+function finishLive(){
+  if (S.live.length >= 18) { // 3분 이상
+    const kind = S.mode === 'sim' ? 'sim' : 'real';
+    S.runs.push({ name: (S.liveName || newName(kind)) + (S.fwDemo && kind === 'real' ? ' (시연)' : ''), kind, use: kind === 'real', rows: S.live.map(r => ({t:r.t,b:r.b,c:r.c,lid:r.lid,fan:r.fan})) });
+    save('bsr_runs', S.runs);
+  }
+  S.live = []; S.liveName = null;
+}
+function newName(kind){
+  const d = new Date(), p = n => String(n).padStart(2,'0');
+  return (kind === 'sim' ? '가상 ' : '실측 ') + `${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+// ---------------- 예측 (PC 쪽, 펌웨어와 같은 계산) ----------------
+function predictNow(){
+  const L = S.live; if (!L.length) return { eA:-1, eN:{eta:-1,m:'-'}, path:null };
+  const g = AI.resample(L);
+  if (!g.length) return { eA:-1, eN:{eta:-1,m:'-'}, path:null };
+  const i = g.length - 1, s = g[i];
+  const tg = target();
+  let eA = -1, path = null;
+  if (i >= AI.LAG && isFinite(s.c) && isFinite(g[i-AI.LAG].c)) {
+    const p = g[i-AI.LAG]; path = [];
+    eA = AI.etaAI(S.model, s.b, s.c, (s.b-p.b)/AI.H, (s.c-p.c)/AI.H, tg, path);
+  }
+  const eN = AI.etaNewton(g.slice(Math.max(0, i-59)), tg);
+  return { eA, eN, path, t: s.t };
+}
+function levelOf(row, eta, done){
+  if (!isFinite(row.b)) return 4;
+  if (done) return 1;
+  if (row.t > deadline()) return 3;
+  if (eta === -2 || (eta >= 0 && row.t + eta > deadline())) return 2;
+  return 0;
+}
+const LV = [
+  { name:'식히는 중', sub:'1시간 안에 될 것 같아요', l:'y' },
+  { name:'완료', sub:'목표 온도에 닿았어요', l:'g' },
+  { name:'늦을 위험', sub:'이대로면 제한 시간 안에 못 식어요', l:'r' },
+  { name:'늦음', sub:'제한 시간이 지났어요', l:'r' },
+  { name:'센서 확인', sub:'온도를 못 읽고 있어요', l:'r' },
+];
+function etaText(e){ return e === -2 ? '못 닿음' : e < 0 ? '--' : e < 1 ? '1분 안' : Math.round(e) + '분'; }
+
+function updateLive(){
+  const L = S.live, last = L[L.length-1];
+  const pr = predictNow(); S.pred = pr;
+  if (last) {
+    $('vB').textContent = fmt(last.b) + '℃';
+    $('vBs').textContent = '목표 ' + target() + '℃';
+    $('vC').textContent = fmt(last.c) + '℃';
+    $('vCs').textContent = '팬 ' + (last.fan ? '켜짐' : '꺼짐') + ' · 뚜껑 ' + (last.lid ? '열림' : '닫힘');
+    const s = Math.round(last.t * 60);
+    $('vT').textContent = Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+    $('vTs').textContent = '제한 ' + deadline() + '분';
+    // 상태: 연결 중이면 ESP32 판단, 시뮬레이션이면 PC 판단
+    const lv = (S.mode === 'serial' && last.lvl !== undefined) ? last.lvl : last.lvlPc;
+    const info = LV[lv] || LV[0];
+    $('vL').textContent = info.name; $('vLs').textContent = info.sub + (S.mode === 'serial' ? ' (ESP32 판단)' : '');
+    ['r','y','g'].forEach(c => $('l' + c.toUpperCase()).classList.toggle('on', info.l === c));
+  }
+  // 예측 표시
+  const fwOn = S.mode === 'serial' && last && last.eA !== undefined;
+  const eA = fwOn ? last.eA : pr.eA, eN = fwOn ? last.eN : pr.eN.eta;
+  $('eA').textContent = etaText(eA);
+  $('eAs').textContent = eA === -1 ? '2분 기록 후 계산' : (eA === -2 ? '180분 안에 목표에 못 닿아요' : '도착 예상 ' + fmt((last?last.t:0) + eA, 0) + '분째');
+  $('eN').textContent = etaText(eN);
+  $('eNs').textContent = eN === -1 ? '2분 기록 후 계산' : (eN === -2 ? '냉기가 목표보다 따뜻해요' : '도착 예상 ' + fmt((last?last.t:0) + eN, 0) + '분째');
+  $('etaNote').textContent = fwOn ? 'ESP32가 계산한 값이에요 (펌웨어에 들어 있는 model.h 기준). 그래프의 점선은 PC의 현재 모델로 그렸어요.' : 'PC 프로그램 안의 현재 모델로 계산했어요.';
+  drawChart();
+}
+
+// ---------------- 그래프 ----------------
+function drawChart(){
+  const cv = $('chart'); if (!cv.offsetParent) return;
+  const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, Hh = 340;
+  cv.width = W * dpr; cv.height = Hh * dpr; cv.style.height = Hh + 'px';
+  const x = cv.getContext('2d'); x.scale(dpr, dpr); x.clearRect(0,0,W,Hh);
+  const L = S.live, pr = S.pred || {}, path = pr.path, tg = target(), dl = deadline();
+  const pad = { l:46, r:14, t:12, b:30 };
+  let tMax = Math.max(dl + 5, L.length ? L[L.length-1].t + 5 : 0);
+  if (path && path.length && pr.t !== undefined) tMax = Math.max(tMax, Math.min(pr.t + path[path.length-1][0], pr.t + 120));
+  let lo = tg - 2, hi = tg + 10;
+  for (const r of L) { if (isFinite(r.b)) { lo = Math.min(lo, r.b); hi = Math.max(hi, r.b); } if (isFinite(r.c)) { lo = Math.min(lo, r.c); hi = Math.max(hi, r.c); } }
+  lo = Math.floor(lo - 1); hi = Math.ceil(hi + 1);
+  const X = t => pad.l + (W - pad.l - pad.r) * t / tMax, Y = v => pad.t + (Hh - pad.t - pad.b) * (hi - v) / (hi - lo);
+  x.font = '12px system-ui, sans-serif'; x.fillStyle = '#6B7385'; x.strokeStyle = '#EEF0F5'; x.lineWidth = 1;
+  const ys = Math.max(1, Math.ceil((hi - lo) / 7));
+  for (let v = Math.ceil(lo); v <= hi; v += ys) { x.beginPath(); x.moveTo(pad.l, Y(v)); x.lineTo(W - pad.r, Y(v)); x.stroke(); x.fillText(v + '℃', 4, Y(v) + 4); }
+  const ts = tMax > 150 ? 30 : tMax > 60 ? 15 : 10;
+  for (let t = 0; t <= tMax; t += ts) { x.fillText(t + '분', X(t) - 10, Hh - 8); }
+  const dash = (v, col, vert) => { x.save(); x.setLineDash([6,5]); x.strokeStyle = col; x.lineWidth = 1.6; x.beginPath();
+    if (vert) { x.moveTo(X(v), pad.t); x.lineTo(X(v), Hh - pad.b); } else { x.moveTo(pad.l, Y(v)); x.lineTo(W - pad.r, Y(v)); } x.stroke(); x.restore(); };
+  dash(tg, '#2E9E6B'); dash(dl, '#9AA0AE', true);
+  const line = (key, col) => { x.strokeStyle = col; x.lineWidth = 2.6; x.beginPath(); let on = false;
+    for (const r of L) { if (!isFinite(r[key])) { on = false; continue; } on ? x.lineTo(X(r.t), Y(r[key])) : x.moveTo(X(r.t), Y(r[key])); on = true; } x.stroke(); };
+  // 뚜껑 열림 구간
+  x.fillStyle = 'rgba(201,55,44,.07)';
+  for (let i = 1; i < L.length; i++) if (L[i].lid) x.fillRect(X(L[i-1].t), pad.t, X(L[i].t) - X(L[i-1].t) + .5, Hh - pad.t - pad.b);
+  line('c', '#1F8FD6'); line('b', '#C9372C');
+  if (path && path.length > 1) {
+    x.save(); x.setLineDash([7,5]); x.lineWidth = 2.4;
+    x.strokeStyle = '#5E68ED'; x.beginPath(); path.forEach((p,i) => { const xx = X(pr.t + p[0]), yy = Y(p[1]); i ? x.lineTo(xx,yy) : x.moveTo(xx,yy); }); x.stroke();
+    x.strokeStyle = 'rgba(31,143,214,.55)'; x.beginPath(); path.forEach((p,i) => { const xx = X(pr.t + p[0]), yy = Y(p[2]); i ? x.lineTo(xx,yy) : x.moveTo(xx,yy); }); x.stroke();
+    x.restore();
+    if (pr.eA >= 0) { const tt = pr.t + pr.eA; x.fillStyle = '#5E68ED'; x.beginPath(); x.arc(X(tt), Y(tg), 5, 0, 7); x.fill(); x.fillText('AI 예상 ' + Math.round(tt) + '분', Math.min(X(tt) + 8, W - 90), Y(tg) - 8); }
+  }
+  if (!L.length) { x.fillStyle = '#9AA0AE'; x.font = '15px system-ui, sans-serif'; x.fillText('ESP32를 연결하거나 시뮬레이션을 시작하면 그래프가 그려져요', pad.l + 20, Hh / 2); }
+}
+window.addEventListener('resize', drawChart);
+$('target').onchange = updateLive; $('deadline').onchange = updateLive;
+
+// ---------------- ESP32 시리얼 ----------------
+function setConn(mode){
+  S.mode = mode;
+  $('connDot').className = 'dot' + (mode === 'serial' ? ' on' : mode === 'sim' ? ' sim' : '');
+  $('connText').textContent = mode === 'serial' ? 'ESP32 연결됨' : mode === 'sim' ? '시뮬레이션 중' : '연결 안 됨';
+  $('btnConnect').textContent = mode === 'serial' ? '연결 끊기' : 'ESP32 연결';
+  $('btnSim').textContent = mode === 'sim' ? '시뮬레이션 멈춤' : '시뮬레이션 시작';
+  $('btnConnect').disabled = mode === 'sim'; $('btnSim').disabled = mode === 'serial';
+  $('simCard').classList.toggle('hide', mode === 'serial');
+}
+$('btnConnect').onclick = async () => {
+  if (S.mode === 'serial') return disconnect();
+  if (!('serial' in navigator)) { alertBox('이 브라우저는 USB 시리얼 연결을 지원하지 않아요. 크롬이나 엣지에서 열어 주세요. 파일로 열었는데 안 되면 사용법 탭을 보세요.'); return; }
+  try {
+    S.port = await navigator.serial.requestPort();
+    await S.port.open({ baudRate: 115200 });
+  } catch (e) { log('연결 실패: ' + e.message); if (String(e.message).match(/open|busy|Failed/i)) alertBox('포트를 열 수 없어요. Arduino 시리얼 모니터가 켜져 있으면 닫고 다시 시도하세요.'); return; }
+  finishLive(); setConn('serial'); log('ESP32 연결됨 (115200)');
+  S.writer = S.port.writable.getWriter();
+  readLoop();
+};
+async function readLoop(){
+  const dec = new TextDecoder(); let buf = '';
+  try {
+    S.reader = S.port.readable.getReader();
+    while (true) {
+      const { value, done } = await S.reader.read(); if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let k; while ((k = buf.indexOf('\n')) >= 0) { const line = buf.slice(0, k).replace(/\r$/, ''); buf = buf.slice(k + 1); onLine(line); }
+    }
+  } catch (e) { log('읽기 중단: ' + e.message); }
+  finally { try { S.reader && S.reader.releaseLock(); } catch(e){} }
+  if (S.mode === 'serial') disconnect();
+}
+function onLine(line){
+  if (line.startsWith('CFG,')) {
+    const c = line.split(',');
+    if (isFinite(+c[1])) $('target').value = +c[1];
+    if (isFinite(+c[2])) $('deadline').value = +c[2];
+    log(`ESP32 설정: 목표 ${c[1]}℃, 제한 ${c[2]}분${c[3] === '1' ? ' (시연 모드)' : ''}`);
+    S.fwDemo = c[3] === '1'; updateLive(); return;
+  }
+  if (!line.startsWith('D,')) { if (line.trim()) log(line); return; }
+  const f = line.split(',').slice(1).map(Number);
+  if (f.length < 8) return;
+  const row = { t:f[0], b:f[1], c:isFinite(f[2]) ? f[2] : NaN, lid:f[3], fan:f[4], lvl:f[5], eN:f[6], eA:f[7] };
+  const last = S.live[S.live.length-1];
+  if (last && row.t < last.t - 0.05) { log('시간이 0분으로 돌아가서 새 실험으로 나눕니다.'); finishLive(); }
+  pushRow(row);
+}
+async function disconnect(){
+  try { S.reader && await S.reader.cancel(); } catch(e){}
+  try { S.writer && S.writer.releaseLock(); } catch(e){}
+  try { S.port && await S.port.close(); } catch(e){}
+  S.port = S.reader = S.writer = null; finishLive(); setConn('idle'); log('연결 끊김'); renderRuns();
+}
+async function send(ch){ if (S.writer) { try { await S.writer.write(new TextEncoder().encode(ch)); } catch(e){ log('보내기 실패: ' + e.message); } } }
+$('btnModelInfo').onclick = () => S.mode === 'serial' ? send('m') : log('PC 현재 모델: 실험 ' + S.model.runs + '개, 표본 ' + S.model.n + '개 ' + (S.model.note || ''));
+
+let doneLatch = false;
+function pushRow(row){
+  // PC 판단 (시뮬레이션용, 펌웨어와 같은 규칙)
+  if (isFinite(row.b)) { if (!doneLatch && row.b <= target()) doneLatch = true; if (doneLatch && row.b > target() + 0.5) doneLatch = false; }
+  S.live.push(row);
+  const pr = predictNow();
+  const eta = pr.eA !== -1 ? pr.eA : pr.eN.eta;
+  row.lvlPc = levelOf(row, eta, doneLatch);
+  updateLive();
+}
+
+$('btnReset').onclick = () => {
+  if (S.mode === 'serial') { send('r'); finishLive(); doneLatch = false; log('새 딸기: ESP32 시간 초기화'); }
+  else if (S.mode === 'sim') { finishLive(); doneLatch = false; startSim(); }
+  else { finishLive(); doneLatch = false; updateLive(); }
+  renderRuns();
+};
+
+// ---------------- 시뮬레이션 ----------------
+function startSim(){
+  const seed = (Math.random() * 1e9) | 0, rand = AI.rng(seed), p = AI.simParams(rand);
+  S.sim = { p, rand, st: { t:0, A:p.A0, M:p.M0, C:p.C0, cap:p.iceCap, I:p.ice }, acc:0, lid:false, last: performance.now(), next:0 };
+  S.live = []; S.liveName = newName('sim'); doneLatch = false;
+  log(`가상 상자: 바깥 ${p.amb.toFixed(1)}℃, 딸기 ${p.M0.toFixed(1)}℃, 냉기 ${p.C0.toFixed(1)}℃ (가정값)`);
+}
+function simTick(now){
+  if (S.mode === 'sim' && S.sim) {
+    const sm = S.sim, speed = +$('simSpeed').value;
+    let simSec = Math.min(600, (now - sm.last) / 1000 * speed); sm.last = now;
+    const lastRow = S.live[S.live.length-1];
+    const fan = !(doneLatch || (lastRow && lastRow.b <= 0)) && !sm.lid;
+    while (simSec > 0) {
+      const dt = Math.min(1, simSec); simSec -= dt;
+      AI.simStep(sm.st, sm.p, dt / 60, fan, sm.lid, sm.rand);
+      if (sm.st.t * 60 >= sm.next - 1e-6) {
+        sm.next += 10;
+        const n = () => (sm.rand() - .5) * 2 * sm.p.noise;
+        pushRow({ t: sm.st.t, b: AI.q16(sm.st.A + n()), c: AI.q16(sm.st.C + n()), lid: sm.lid ? 1 : 0, fan: fan ? 1 : 0 });
+      }
+    }
+    if (sm.st.t > 150) { finishLive(); startSim(); }
+  }
+  requestAnimationFrame(simTick);
+}
+requestAnimationFrame(simTick);
+$('btnSim').onclick = () => {
+  if (S.mode === 'sim') { finishLive(); S.sim = null; setConn('idle'); renderRuns(); return; }
+  finishLive(); setConn('sim'); startSim();
+};
+$('btnLid').onclick = () => { if (!S.sim) return; S.sim.lid = !S.sim.lid; $('btnLid').textContent = S.sim.lid ? '뚜껑 닫기' : '뚜껑 열기'; };
+
+// ---------------- 실험 기록 탭 ----------------
+function stats(r){
+  const bs = r.rows.map(x => x.b).filter(isFinite);
+  const tg = parseFloat($('evalTarget').value) || 1;
+  const hit = r.rows.find(x => x.b <= tg);
+  return { len: r.rows.length ? r.rows[r.rows.length-1].t - r.rows[0].t : 0, start: bs[0], min: Math.min(...bs), hit: hit ? hit.t - r.rows[0].t : null };
+}
+function renderRuns(){
+  const tb = $('runBody'); tb.innerHTML = '';
+  const nr = S.runs.filter(r => r.kind !== 'sim').length;
+  $('runCount').textContent = `· 실측 ${nr}개, 가상 ${S.runs.length - nr}개, 학습에 체크 ${S.runs.filter(r => r.use).length}개`;
+  if (!S.runs.length) { tb.innerHTML = '<tr><td colspan="8" class="note">아직 기록이 없어요. ESP32를 연결해 실험하거나, CSV를 불러오거나, 가상 실험을 만들어 보세요.</td></tr>'; return; }
+  S.runs.forEach((r, i) => {
+    const s = stats(r), tr = document.createElement('tr');
+    tr.innerHTML = `<td class="ctr"><input type="checkbox" ${r.use ? 'checked' : ''}></td><td>${esc(r.name)}</td>
+      <td class="ctr"><span class="badge ${r.kind === 'sim' ? 'sim' : 'real'}">${r.kind === 'sim' ? '가상' : r.kind === 'file' ? '불러옴' : '실측'}</span></td>
+      <td class="num">${fmt(s.len,0)}분</td><td class="num">${fmt(s.start)}℃</td><td class="num">${fmt(s.min)}℃</td>
+      <td class="num">${s.hit === null ? '-' : fmt(s.hit,0) + '분'}</td>
+      <td><button class="btn" style="padding:4px 9px" data-a="dl">CSV</button> <button class="btn" style="padding:4px 9px" data-a="del">삭제</button></td>`;
+    tr.querySelector('input').onchange = e => { r.use = e.target.checked; save('bsr_runs', S.runs); renderRuns(); };
+    tr.querySelector('[data-a=dl]').onclick = () => download(r.name.replace(/[\\/:*?"<>| ]/g, '_') + '.csv', toCsv(r.rows));
+    tr.querySelector('[data-a=del]').onclick = () => { if (confirm(r.name + ' 기록을 삭제할까요?')) { S.runs.splice(i, 1); save('bsr_runs', S.runs); renderRuns(); } };
+    tb.appendChild(tr);
+  });
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function toCsv(rows){ return 'min,berry_c,cold_c,lid_open,cooling\n' + rows.map(r => [r.t.toFixed(3), fmt(r.b,3), isFinite(r.c) ? r.c.toFixed(3) : 'nan', r.lid ? 1 : 0, r.fan ? 1 : 0].join(',')).join('\n'); }
+function download(name, text, type='text/plain'){ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); }
+
+// CSV 해석: log.csv / 이 프로그램 CSV / 시리얼 'D,' 줄. 시간이 되돌아가면 실험을 나눔
+function parseText(text, fname){
+  const lines = text.split(/\r?\n/); const runs = []; let cur = [], cols = null;
+  const flush = () => { if (cur.length >= 12) runs.push(cur); cur = []; };
+  for (let raw of lines) {
+    let line = raw.trim(); if (!line) continue;
+    let f;
+    if (line.startsWith('D,')) { f = line.split(',').slice(1); cols = { t:0, b:1, c:2, lid:3, fan:4 }; }
+    else if (/[a-z]/i.test(line.split(',')[0]) && line.includes(',')) {
+      const h = line.split(',').map(s => s.trim().toLowerCase()); const idx = n => h.findIndex(x => n.includes(x));
+      cols = { t: idx(['min','t','time','minute']), b: idx(['berry_c','berry','food','b']), c: idx(['cold_c','cold','c']), lid: idx(['lid_open','lid']), fan: idx(['cooling','fan']) };
+      continue;
+    } else f = line.split(',');
+    if (!cols || cols.t < 0 || cols.b < 0) cols = { t:0, b:1, c:2, lid:3, fan:4 };
+    const num = k => cols[k] >= 0 && f[cols[k]] !== undefined ? parseFloat(f[cols[k]]) : NaN;
+    const row = { t: num('t'), b: num('b'), c: num('c'), lid: num('lid') === 1 ? 1 : 0, fan: isNaN(num('fan')) ? 1 : (num('fan') === 0 ? 0 : 1) };
+    if (!isFinite(row.t) || !isFinite(row.b) || row.b < -55 || row.b > 125) continue;
+    if (isFinite(row.c) && (row.c < -55 || row.c > 125)) row.c = NaN;
+    if (cur.length && row.t < cur[cur.length-1].t - 0.05) flush();
+    cur.push(row);
+  }
+  flush();
+  return runs.map((rows, i) => ({ name: fname.replace(/\.(csv|txt)$/i, '') + (runs.length > 1 ? ` #${i+1}` : ''), kind: 'file', use: true, rows }));
+}
+$('fileIn').onchange = async e => {
+  let added = 0;
+  for (const file of e.target.files) { const rs = parseText(await file.text(), file.name); S.runs.push(...rs); added += rs.length; }
+  save('bsr_runs', S.runs); renderRuns(); e.target.value = '';
+  alertBox(added ? `실험 ${added}개를 불러왔어요.` : '불러올 수 있는 기록을 못 찾았어요. (시간, 식품칸 온도 열이 있어야 하고 2분 이상이어야 해요)');
+};
+$('btnGen').onclick = () => {
+  const n = Math.max(1, Math.min(200, parseInt($('simN').value) || 30));
+  for (let i = 0; i < n; i++) { const seed = (Math.random() * 1e9) | 0; S.runs.push({ name: '가상 #' + seed.toString(36), kind: 'sim', use: true, rows: AI.simulateRun(seed, 90).rows }); }
+  save('bsr_runs', S.runs); renderRuns();
+};
+$('btnDelSim').onclick = () => { S.runs = S.runs.filter(r => r.kind !== 'sim'); save('bsr_runs', S.runs); renderRuns(); };
+
+// ---------------- 학습 ----------------
+$('btnTrain').onclick = () => {
+  const use = S.runs.filter(r => r.use);
+  const msg = $('trainMsg'); msg.innerHTML = '';
+  if (!use.length) { msg.innerHTML = '<p class="callout">학습에 쓸 실험을 "실험 기록" 탭에서 체크해 주세요.</p>'; return; }
+  const grids = use.map(r => AI.resample(r.rows));
+  let train = grids.filter((_, i) => i % 5 !== 4), test = grids.filter((_, i) => i % 5 === 4), selfTest = false;
+  if (!test.length) { test = grids; train = grids; selfTest = true; }
+  const nSim = use.filter(r => r.kind === 'sim').length;
+  let m;
+  try { m = AI.train(train, { lambda: parseFloat($('lambda').value) || 0, note: nSim ? (nSim === use.length ? 'simulation only' : 'includes simulation') : 'real data' }); }
+  catch (e) { msg.innerHTML = `<p class="callout">${esc(e.message)}</p>`; return; }
+  const tg = parseFloat($('evalTarget').value) || 1;
+  const ev = AI.evaluate(m, test, tg);
+  S.trained = m;
+  $('trainResult').classList.remove('hide');
+  $('rN').textContent = m.n.toLocaleString(); $('rNs').textContent = `학습 실험 ${train.length}개`;
+  $('rFit').textContent = '±' + m.fitMaeB.toFixed(2) + '℃';
+  $('rTest').textContent = ev.runsUsed + '개'; $('rTests').textContent = `${tg}℃에 닿은 시험 실험 · 비교 ${ev.points}번`;
+  const items = [['직선 추세', ev.maeLinear, '#9AA0AE'], ['뉴턴 계산식', ev.maeNewton, '#1F8FD6'], ['AI 학습 모델', ev.maeAI, '#5E68ED']];
+  const mx = Math.max(...items.map(i => isFinite(i[1]) ? i[1] : 0), 1);
+  $('bars').innerHTML = items.map(([n, v, c]) => `<div class="b"><b>${n}</b><div class="track"><div class="fill" style="width:${isFinite(v) ? 100 * v / mx : 0}%;background:${c}"></div></div><span class="num">${isFinite(v) ? v.toFixed(1) + '분' : '-'}</span></div>`).join('');
+  const pass = isFinite(ev.maeAI) && ev.maeAI < ev.maeNewton && ev.maeAI < ev.maeLinear;
+  $('rPass').textContent = !ev.runsUsed ? '평가 불가' : pass ? '통과' : '미통과';
+  $('rPass').style.color = !ev.runsUsed ? 'var(--muted)' : pass ? 'var(--green)' : 'var(--red)';
+  let note = '시험 실험에서 30초마다 "목표까지 남은 시간"을 예측하고 실제와의 차이를 평균냈어요. "못 닿음"으로 잘못 예측하면 180분 오차로 계산합니다.';
+  if (!ev.runsUsed) note = `시험 실험 중 ${tg}℃에 실제로 닿은 실험이 없어서 비교할 수 없어요. 평가 목표 온도를 높이거나(예: 5℃) 더 오래 기록해 보세요.`;
+  if (selfTest) note += ' 실험이 5개보다 적어서 학습한 실험으로 시험했어요. 오차가 실제보다 작게 나올 수 있어요.';
+  $('evalNote').textContent = note;
+  if (nSim) msg.innerHTML = `<p class="callout">가상 실험 ${nSim}개가 포함됐어요. 이 결과는 가정한 계수로 만든 시뮬레이션 기준이라, 발표에서 실측 성능으로 말하면 안 돼요.</p>`;
+  else msg.innerHTML = `<p class="callout ok">실측 기록 ${use.length}개로 학습했어요.</p>`;
+  const names = ['절편', '식품칸−냉기실 차', '냉기실 온도', '식품칸 2분 기울기', '냉기실 2분 기울기'];
+  $('wTable').innerHTML = '<tr><th>입력</th><th class="num">식품칸 변화</th><th class="num">냉기실 변화</th></tr>' +
+    names.map((n, k) => `<tr><td>${n}</td><td class="num">${m.wb[k].toFixed(3)}</td><td class="num">${m.wc[k].toFixed(3)}</td></tr>`).join('');
+  $('useNote').textContent = '';
+};
+$('btnUse').onclick = () => { if (!S.trained) return; S.model = S.trained; save('bsr_model', S.model); $('useNote').textContent = '실시간 예측과 model.h에 이 모델을 씁니다. 펌웨어에도 넣으려면 "펌웨어로 보내기" 탭으로 가세요.'; updateLive(); };
+
+// ---------------- 내보내기 ----------------
+function renderExport(){
+  $('hOut').textContent = AI.toHeader(S.model);
+  const b = $('modelBadge'); const note = S.model.note || '';
+  b.textContent = note.includes('real data') ? '실측 학습' : note.includes('simulation') ? '시뮬레이션 학습' : '학습 모델';
+  b.className = 'badge ' + (note.includes('real data') ? 'real' : 'sim');
+}
+$('btnDlH').onclick = () => download('model.h', AI.toHeader(S.model));
+$('btnCopyH').onclick = async () => { try { await navigator.clipboard.writeText(AI.toHeader(S.model)); $('btnCopyH').textContent = '복사됨'; setTimeout(() => $('btnCopyH').textContent = '복사', 1500); } catch(e){ alertBox('복사 권한이 없어요. 내려받기를 써 주세요.'); } };
+$('btnDlJ').onclick = () => download('busrk_model.json', JSON.stringify(S.model, null, 1), 'application/json');
+$('modelIn').onchange = async e => {
+  try { const m = JSON.parse(await e.target.files[0].text()); if (!m.wb || m.wb.length !== 5 || !m.wc || !m.mean) throw 0; S.model = m; save('bsr_model', m); renderExport(); updateLive(); }
+  catch (_) { alertBox('모델 파일 형식이 맞지 않아요.'); }
+  e.target.value = '';
+};
+$('btnDefault').onclick = () => { S.model = DEFAULT_MODEL; save('bsr_model', null); try{localStorage.removeItem('bsr_model');}catch(e){} renderExport(); updateLive(); };
+
+function alertBox(t){ alert(t); }
+setConn('idle'); renderRuns(); updateLive();
+</script>
+</body>
+</html>

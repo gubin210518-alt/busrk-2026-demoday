@@ -1,0 +1,82 @@
+{
+  "v": 4,
+  "attachments": {},
+  "cover": "cover",
+  "createdOnFiles": {
+    "at": "2026-10-21T01:10:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "faces": {
+    "gmarket-sans-bold": {
+      "family": "Gmarket Sans Bold",
+      "src": "/_blob/9a527dfa5df6d818f681e15b547ed86a"
+    },
+    "gmarket-sans-light": {
+      "family": "Gmarket Sans Light",
+      "src": "/_blob/55d7075700da75819d29bc4c5241c240"
+    },
+    "gmarket-sans-medium": {
+      "family": "Gmarket Sans Medium",
+      "src": "/_blob/cb177733fc5b4ca17b5ac20c9874092e"
+    }
+  },
+  "lists": "css",
+  "order": [
+    "cover",
+    "toc",
+    "d1",
+    "problem",
+    "target",
+    "d2",
+    "flow",
+    "levels",
+    "d3",
+    "attach",
+    "wiring",
+    "d4",
+    "diff",
+    "d5",
+    "criteria",
+    "d6",
+    "ethics",
+    "sdgs",
+    "thanks"
+  ],
+  "sections": {
+    "s1": {
+      "description": "표지와 목차",
+      "start": "cover"
+    },
+    "s2": {
+      "description": "수확 직후 딸기가 얼마나 식었는지 알 수 없다는 문제와 대상",
+      "start": "d1"
+    },
+    "s3": {
+      "before": null,
+      "description": "인지, 판단, 행동으로 이어지는 해결 아이디어",
+      "start": "d2"
+    },
+    "s4": {
+      "description": "부착도, 배선도, 부품과 예산",
+      "start": "d3"
+    },
+    "s5": {
+      "description": "1시간 안에 다 식을지 먼저 알리는 차별점과 AI 비교",
+      "start": "d4"
+    },
+    "s6": {
+      "description": "숫자로 정한 성공 기준",
+      "start": "d5"
+    },
+    "s7": {
+      "description": "안전과 윤리, SDGs 연결",
+      "start": "d6"
+    },
+    "s8": {
+      "description": "마무리",
+      "start": "thanks"
+    }
+  },
+  "title": "부스럭 식품의 골든타임을 지키는 예냉박스 데모데이 발표"
+}

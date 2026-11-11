@@ -1,0 +1,17 @@
+부스럭 예냉박스 — 대회장 파일 (각 파일 하나로 동작, 폴더 필요 없음)
+
+precool_ai_demo.ino  ← 대회장 시연용 (목표 15℃, 제한 10분). 이걸 업로드
+precool_ai.ino       실사용 (목표 1℃, 제한 60분)
+parts_check.ino      부품 점검용
+busrk_ai_studio.html PC 프로그램 (크롬/엣지로 열기)
+
+업로드: Arduino IDE로 .ino 열기 → "폴더를 만들까요?" 나오면 [확인] → 보드 ESP32 Dev Module → 업로드
+라이브러리: OneWire, DallasTemperature, ESP32Servo, Adafruit SSD1306, Adafruit GFX Library
+
+대회장: 아이스팩 넣기 → USB 연결 → Arduino 시리얼 모니터 닫기 → html 열고 "ESP32 연결"
+→ 2분 뒤 AI 예측 표시 → 다시 할 땐 "새 딸기 시작"
+시연 목표 15℃는 시작 식품칸 온도보다 5~8℃ 낮아야 함 (아니면 .ino 위쪽 DEMO_TARGET_C 수정)
+연결이 안 되면 html에서 "시뮬레이션 시작"으로 화면 시연
+
+AI 모델은 시뮬레이션으로 미리 학습한 것 (실측 성능 아님).
+새 모델을 넣을 땐 .ino 안 "학습 모델 (model.h)" 블록을 PC 프로그램에서 받은 model.h 내용으로 교체.

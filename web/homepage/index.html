@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>부스럭 예냉박스 부착도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
+
+<main class="wrap">
+  <nav class="site" aria-label="페이지">
+    <span class="brand">TEAM 부스럭 · 신정고 매니악코더</span>
+    <span class="links">
+      <a href="about.html">프로젝트 소개</a>
+      <a href="index.html" aria-current="page">부착도 · 배선도</a>
+      <a href="code.html">소스코드</a>
+      <a href="https://busrk-ai-studio.vercel.app" target="_blank" rel="noopener">AI 시뮬레이터 ↗</a>
+    </span>
+  </nav>
+  <header>
+    <h1>부스럭 예냉박스 부착도</h1>
+    <p class="sub">아이스박스 안팎에 부품을 어디에 어떻게 붙이는지, 그리고 ESP32에 어떻게 연결하는지 한 페이지에서 확인해요. 박스 치수를 넣으면 모형이 같이 바뀌어요.</p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="보기 선택">
+    <button class="tab" role="tab" id="t-3d" aria-controls="p-3d" aria-selected="true">3D 부착도</button>
+    <button class="tab" role="tab" id="t-wire" aria-controls="p-wire" aria-selected="false" tabindex="-1">배선도</button>
+  </div>
+
+  <!-- 3D 부착도 -->
+  <section class="panel" id="p-3d" role="tabpanel" aria-labelledby="t-3d">
+    <form class="dims" id="dims" novalidate>
+      <label for="dW">바깥 가로 (cm)<input id="dW" type="number" inputmode="decimal" min="30" max="70" step="0.5"></label>
+      <label for="dD">바깥 세로 (cm)<input id="dD" type="number" inputmode="decimal" min="22" max="50" step="0.5"></label>
+      <label for="dH">바깥 높이 (cm)<input id="dH" type="number" inputmode="decimal" min="18" max="45" step="0.5"></label>
+      <label for="dT">벽 두께 (cm)<input id="dT" type="number" inputmode="decimal" min="1.5" max="4" step="0.1"></label>
+      <button class="tg" type="button" id="dReset">처음 값으로</button>
+      <p class="out" id="dOut" aria-live="polite"></p>
+    </form>
+
+    <div class="bar" role="group" aria-label="모형 조작">
+      <span class="lab">상태</span>
+      <div class="seg">
+        <button class="tg" type="button" id="b-lid" aria-pressed="true">뚜껑 열림</button>
+        <button class="tg" type="button" id="b-cut" aria-pressed="true">앞·왼쪽 벽 투명</button>
+        <button class="tg" type="button" id="b-dmp" aria-pressed="true">댐퍼 열림</button>
+        <button class="tg" type="button" id="b-fan" aria-pressed="true">팬 켜짐</button>
+        <button class="tg" type="button" id="b-pin" aria-pressed="true">번호 표시</button>
+      </div>
+      <span class="lab">시점</span>
+      <div class="seg">
+        <button class="tg" type="button" data-view="all">전체</button>
+        <button class="tg" type="button" data-view="front">정면</button>
+        <button class="tg" type="button" data-view="left">왼쪽(표시부)</button>
+        <button class="tg" type="button" data-view="top">위에서</button>
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <canvas id="c" aria-label="아이스박스 부품 부착 3D 모형"></canvas>
+      <div id="pins"></div>
+      <div class="hint">끌어서 회전 · 휠이나 두 손가락으로 확대</div>
+    </div>
+    <p class="status" id="status" aria-live="polite"></p>
+  </section>
+
+  <!-- 배선도 -->
+  <section class="panel" id="p-wire" role="tabpanel" aria-labelledby="t-wire" hidden>
+    <div class="wpick" role="group" aria-label="부품 하나씩 보기">
+      <span class="lab">부품 하나씩 보기</span>
+      <button class="tg" type="button" data-k="pw" aria-pressed="true">1 전원</button>
+      <button class="tg" type="button" data-k="ds" aria-pressed="false">2 온도센서</button>
+      <button class="tg" type="button" data-k="reed" aria-pressed="false">3 리드스위치</button>
+      <button class="tg" type="button" data-k="oled" aria-pressed="false">4 OLED</button>
+      <button class="tg" type="button" data-k="led" aria-pressed="false">5 신호등 LED</button>
+      <button class="tg" type="button" data-k="buz" aria-pressed="false">6 부저</button>
+      <button class="tg" type="button" data-k="servo" aria-pressed="false">7 서보</button>
+      <button class="tg" type="button" data-k="mos" aria-pressed="false">8 MOSFET·팬</button>
+      <button class="tg" type="button" data-k="all" aria-pressed="false">전체 보기</button>
+    </div>
+    <figure class="sheet" data-k="pw">
+<svg class="wide" viewBox="0 0 1000 820" role="img" aria-label="실제 ESP32 보드(HW-394)처럼 USB-C를 위에 두고 그린 배선도. 신호선은 부품에서 보드 핀으로 곧게 들어가고, 전원선은 바깥쪽의 3.3V 줄, 5V 줄, GND 줄로 나가요. 3.3V 줄은 3V3 핀, 5V 줄은 VIN 핀, GND 줄은 두 GND 핀에서 시작해요.">
+  <g data-w="w-esp" class="wm" data-part="8">
+    <rect class="pcb" x="360" y="80" width="280" height="560" rx="12"/>
+    <rect class="usb" x="468" y="66" width="64" height="30" rx="8"/>
+    <rect class="pbtn" x="386" y="92" width="22" height="18" rx="3"/><circle class="pbtnc" cx="397" cy="101" r="5"/>
+    <rect class="pbtn" x="592" y="92" width="22" height="18" rx="3"/><circle class="pbtnc" cx="603" cy="101" r="5"/>
+    <text class="pcbs" x="397" y="124" text-anchor="middle">BOOT</text>
+    <text class="pcbs" x="603" y="124" text-anchor="middle">EN</text>
+    <text class="pcbtt" x="500" y="122" text-anchor="middle">ESP32 WROOM</text>
+    <text class="pcbs" x="500" y="139" text-anchor="middle">HW-394 · USB-C · 30핀</text>
+    <rect class="can" x="440" y="326" width="120" height="276" rx="4"/>
+    <rect class="ant" x="440" y="602" width="120" height="30" rx="2"/>
+    <text class="pcbs cant" x="500" y="468" text-anchor="middle">ESP32 모듈</text>
+    <circle class="hole on" cx="374" cy="156" r="5"/>
+    <circle class="hole on" cx="626" cy="156" r="5"/>
+    <text class="pcbt p33" x="386" y="160">3V3</text>
+    <text class="pcbt p5" x="614" y="160" text-anchor="end">VIN</text>
+    <circle class="hole on" cx="374" cy="186" r="5"/>
+    <circle class="hole on" cx="626" cy="186" r="5"/>
+    <text class="pcbt g" x="386" y="190">GND</text>
+    <text class="pcbt g" x="614" y="190" text-anchor="end">GND</text>
+    <circle class="hole" cx="374" cy="216" r="5"/>
+    <circle class="hole" cx="626" cy="216" r="5"/>
+    <text class="pcbt off" x="386" y="220">D15</text>
+    <text class="pcbt off" x="614" y="220" text-anchor="end">D13</text>
+    <circle class="hole" cx="374" cy="246" r="5"/>
+    <circle class="hole" cx="626" cy="246" r="5"/>
+    <text class="pcbt off" x="386" y="250">D2</text>
+    <text class="pcbt off" x="614" y="250" text-anchor="end">D12</text>
+    <circle class="hole on" cx="374" cy="276" r="5"/>
+    <circle class="hole" cx="626" cy="276" r="5"/>
+    <text class="pcbt s" x="386" y="280">D4</text>
+    <text class="pcbt off" x="614" y="280" text-anchor="end">D14</text>
+    <circle class="hole" cx="374" cy="306" r="5"/>
+    <circle class="hole on" cx="626" cy="306" r="5"/>
+    <text class="pcbt off" x="386" y="310">D16</text>
+    <text class="pcbt s" x="614" y="310" text-anchor="end">D27</text>
+    <circle class="hole" cx="374" cy="336" r="5"/>
+    <circle class="hole on" cx="626" cy="336" r="5"/>
+    <text class="pcbt off" x="386" y="340">D17</text>
+    <text class="pcbt s" x="614" y="340" text-anchor="end">D26</text>
+    <circle class="hole" cx="374" cy="366" r="5"/>
+    <circle class="hole on" cx="626" cy="366" r="5"/>
+    <text class="pcbt off" x="386" y="370">D5</text>
+    <text class="pcbt s" x="614" y="370" text-anchor="end">D25</text>
+    <circle class="hole on" cx="374" cy="396" r="5"/>
+    <circle class="hole on" cx="626" cy="396" r="5"/>
+    <text class="pcbt s" x="386" y="400">D18</text>
+    <text class="pcbt s" x="614" y="400" text-anchor="end">D33</text>
+    <circle class="hole on" cx="374" cy="426" r="5"/>
+    <circle class="hole on" cx="626" cy="426" r="5"/>
+    <text class="pcbt s" x="386" y="430">D19</text>
+    <text class="pcbt s" x="614" y="430" text-anchor="end">D32</text>
+    <circle class="hole on" cx="374" cy="456" r="5"/>
+    <circle class="hole" cx="626" cy="456" r="5"/>
+    <text class="pcbt s" x="386" y="460">D21</text>
+    <text class="pcbt off" x="614" y="460" text-anchor="end">D35</text>
+    <circle class="hole" cx="374" cy="486" r="5"/>
+    <circle class="hole" cx="626" cy="486" r="5"/>
+    <text class="pcbt off" x="386" y="490">RX0</text>
+    <text class="pcbt off" x="614" y="490" text-anchor="end">D34</text>
+    <circle class="hole" cx="374" cy="516" r="5"/>
+    <circle class="hole" cx="626" cy="516" r="5"/>
+    <text class="pcbt off" x="386" y="520">TX0</text>
+    <text class="pcbt off" x="614" y="520" text-anchor="end">VN</text>
+    <circle class="hole on" cx="374" cy="546" r="5"/>
+    <circle class="hole" cx="626" cy="546" r="5"/>
+    <text class="pcbt s" x="386" y="550">D22</text>
+    <text class="pcbt off" x="614" y="550" text-anchor="end">VP</text>
+    <circle class="hole" cx="374" cy="576" r="5"/>
+    <circle class="hole" cx="626" cy="576" r="5"/>
+    <text class="pcbt off" x="386" y="580">D23</text>
+    <text class="pcbt off" x="614" y="580" text-anchor="end">EN</text>
+  </g>
+  <g class="wk" data-k="pw" data-w="w-rails">
+    <polyline class="l5 railline" points="640,156 652,156 652,20 14,20 14,426"/>
+    <polyline class="l33 railline" points="360,156 340,156 340,36 28,36 28,730 986,730 986,288"/>
+    <polyline class="lg railline" points="360,186 42,186 42,632"/>
+    <polyline class="lg railline" points="640,186 958,186 958,532"/>
+    <text class="rl r5" x="480" y="14" text-anchor="middle">5V 줄 (VIN)</text>
+    <text class="rl r33" x="190" y="52" text-anchor="middle">3.3V 줄 (3V3)</text>
+    <text class="rl r33" x="500" y="724" text-anchor="middle">3.3V 줄</text>
+    <text class="rl rg" x="50" y="180">GND 줄</text>
+    <text class="rl rg" x="950" y="180" text-anchor="end">GND 줄</text>
+  </g>
+  <g class="wk" data-k="ds">
+    <g data-w="w-ds" class="wm" data-part="5"><rect class="mod" x="60" y="212" width="160" height="100" rx="8"/><text class="tt" x="68" y="234">DS18B20 ×2</text><text class="sm" x="68" y="252">방수 프로브 · 병렬</text><text class="pl" x="68" y="280">빨강 VCC</text><text class="pl" x="212" y="280" text-anchor="end">노랑 DATA</text><text class="pl" x="68" y="298">검정 GND</text></g>
+    <line class="wire" x1="220" y1="276" x2="360" y2="276"/>
+    <path class="l33" d="M60 276 H48 A6 6 0 0 0 36 276 H28"/><circle class="d33" cx="28" cy="276" r="4"/>
+    <path class="lg" d="M60 294 H42"/><circle class="dg" cx="42" cy="294" r="4"/>
+    <path class="lead" d="M340 276 V250 "/><rect class="res" x="332" y="222" width="16" height="28" rx="2"/><path class="l33" d="M340 222 V192 A6 6 0 0 1 340 180 V156"/><circle class="ds" cx="340" cy="276" r="4"/><circle class="d33" cx="340" cy="156" r="4"/><text class="pn" x="326" y="240" text-anchor="end">4.7kΩ</text>
+  </g>
+  <g class="wk" data-k="servo">
+    <g data-w="w-servo" class="wm" data-part="4"><rect class="mod" x="60" y="344" width="160" height="62" rx="8"/><text class="tt" x="68" y="364">SG90 서보</text><text class="pl" x="68" y="382">빨강 5V</text><text class="sm" x="212" y="382" text-anchor="end">댐퍼 여닫기</text><text class="pl" x="68" y="400">갈색 GND</text><text class="pl" x="212" y="400" text-anchor="end">주황 신호</text></g>
+    <path class="l5" d="M60 378 H48 A6 6 0 0 0 36 378 H34 A6 6 0 0 0 22 378 H14"/><circle class="d5" cx="14" cy="378" r="4"/>
+    <path class="lg" d="M60 396 H42"/><circle class="dg" cx="42" cy="396" r="4"/>
+    <line class="wire" x1="220" y1="396" x2="360" y2="396"/>
+  </g>
+  <g class="wk" data-k="mos">
+    <g data-w="w-mos" class="wm" data-part="8"><rect class="mod" x="60" y="414" width="160" height="58" rx="8"/><text class="pl" x="68" y="430">VIN+</text><text class="pl" x="212" y="430" text-anchor="end">PWM</text><text class="pl" x="68" y="448">VIN−·GND</text><text class="sm" x="212" y="448" text-anchor="end">LR7843/D4184</text><text class="tt" x="68" y="466">MOSFET 모듈</text></g>
+    <line class="wire" x1="220" y1="426" x2="360" y2="426"/>
+    <path class="l5" d="M60 426 H48 A6 6 0 0 0 36 426 H34 A6 6 0 0 0 22 426 H14"/><circle class="d5" cx="14" cy="426" r="4"/>
+    <path class="lg" d="M60 444 H42"/><circle class="dg" cx="42" cy="444" r="4"/>
+    <g data-w="w-fan" class="wm" data-part="3"><line class="lead" x1="100" y1="472" x2="100" y2="504"/><line class="lead" x1="180" y1="472" x2="180" y2="504"/><text class="pl" x="94" y="486" text-anchor="end">OUT+</text><text class="pl" x="186" y="486">OUT−</text><line class="lead" x1="100" y1="492" x2="132" y2="492"/><line class="lead" x1="148" y1="492" x2="180" y2="492"/><polygon class="dk" points="148,484 148,500 133,492"/><line class="lead" x1="132" y1="483" x2="132" y2="501" style="stroke-width:2.6"/><circle class="dk" cx="100" cy="492" r="3.5"/><circle class="dk" cx="180" cy="492" r="3.5"/><rect class="mod" x="60" y="504" width="160" height="62" rx="8"/><text class="tt" x="68" y="524">5V 쿨링팬 4010</text><text class="sm" x="68" y="541">빨강 OUT+ · 검정 OUT−</text><text class="sm" x="68" y="557">1N5819 띠를 + 쪽에</text></g>
+  </g>
+  <g class="wk" data-k="oled">
+    <g data-w="w-oled" class="wm" data-part="9"><rect class="mod" x="60" y="580" width="160" height="76" rx="8"/><text class="tt" x="68" y="600">OLED 0.96인치</text><text class="pl" x="68" y="618">VCC</text><text class="pl" x="212" y="618" text-anchor="end">SDA</text><text class="pl" x="68" y="636">GND</text><text class="pl" x="212" y="636" text-anchor="end">SCL</text><text class="sm" x="68" y="654">I2C · 주소 보통 0x3C</text></g>
+    <polyline class="wire" points="360,456 345,456 345,614 220,614"/>
+    <polyline class="wire" points="360,546 352,546 352,632 220,632"/>
+    <path class="l33" d="M60 614 H48 A6 6 0 0 0 36 614 H28"/><circle class="d33" cx="28" cy="614" r="4"/>
+    <path class="lg" d="M60 632 H42"/><circle class="dg" cx="42" cy="632" r="4"/>
+  </g>
+  <g class="wk" data-k="reed">
+    <g data-w="w-reed" class="wm" data-part="10"><rect class="mod" x="780" y="240" width="160" height="76" rx="8"/><text class="tt" x="788" y="260">리드스위치 모듈</text><text class="sm" x="788" y="276">뚜껑 열림 · 자석</text><text class="pl" x="932" y="292" text-anchor="end">VCC</text><text class="pl" x="788" y="310">DO</text><text class="pl" x="932" y="310" text-anchor="end">GND</text></g>
+    <line class="wire" x1="640" y1="306" x2="780" y2="306"/>
+    <path class="l33" d="M940 288 H952 A6 6 0 0 1 964 288 H986"/><circle class="d33" cx="986" cy="288" r="4"/>
+    <path class="lg" d="M940 306 H958"/><circle class="dg" cx="958" cy="306" r="4"/>
+  </g>
+  <g class="wk" data-k="led">
+    <g data-w="w-led" class="wm" data-part="9"><rect class="mod" x="780" y="324" width="160" height="132" rx="8"/><text class="pl" x="788" y="340">R</text><text class="tt" x="932" y="340" text-anchor="end">신호등 LED 모듈</text><text class="sm" x="932" y="358" text-anchor="end">빨강·노랑·초록</text><text class="pl" x="788" y="400">Y</text><text class="pl" x="788" y="430">G</text><text class="pl" x="932" y="448" text-anchor="end">GND</text></g>
+    <line class="wire" x1="640" y1="336" x2="780" y2="336"/>
+    <line class="wire" x1="640" y1="396" x2="780" y2="396"/>
+    <line class="wire" x1="640" y1="426" x2="780" y2="426"/>
+    <path class="lg" d="M940 444 H958"/><circle class="dg" cx="958" cy="444" r="4"/>
+  </g>
+  <g class="wk" data-k="buz">
+    <g data-w="w-buz" class="wm" data-part="9"><rect class="mod" x="780" y="462" width="160" height="76" rx="8"/><text class="tt" x="788" y="482">액티브 부저 모듈</text><text class="sm" x="788" y="500">LOW일 때 울림</text><text class="pl" x="788" y="518">I/O</text><text class="pl" x="932" y="518" text-anchor="end">VCC</text><text class="pl" x="932" y="536" text-anchor="end">GND</text></g>
+    <path class="wire" d="M640 366 H740 V390 A6 6 0 0 1 740 402 V420 A6 6 0 0 1 740 432 V514 H780"/>
+    <path class="l33" d="M940 514 H952 A6 6 0 0 1 964 514 H986"/><circle class="d33" cx="986" cy="514" r="4"/>
+    <path class="lg" d="M940 532 H958"/><circle class="dg" cx="958" cy="532" r="4"/>
+  </g>
+  <g class="ov" data-k="pw">
+    <polyline class="l5 ovl" points="640,156 652,156 652,20 14,20 14,426"/>
+    <polyline class="l33 ovl" points="360,156 340,156 340,36 28,36 28,730 986,730 986,288"/>
+    <polyline class="lg ovl" points="360,186 42,186 42,632"/>
+    <polyline class="lg ovl" points="640,186 958,186 958,532"/>
+    <circle class="pring" cx="374" cy="156" r="10"/>
+    <circle class="pring" cx="374" cy="186" r="10"/>
+    <circle class="pring" cx="626" cy="156" r="10"/>
+    <circle class="pring" cx="626" cy="186" r="10"/>
+  </g>
+  <g class="ov" data-k="ds">
+    <polyline class="l33 ovl" points="60,276 28,276 28,36 340,36 340,156 360,156"/>
+    <polyline class="lg ovl" points="60,294 42,294 42,186 360,186"/>
+    <polyline class="l33 ovl" points="340,222 340,156 360,156"/>
+    <line class="wire ovl" x1="220" y1="276" x2="360" y2="276"/>
+    <circle class="pring" cx="374" cy="276" r="10"/>
+    <circle class="pring" cx="374" cy="156" r="10"/>
+    <circle class="pring" cx="374" cy="186" r="10"/>
+  </g>
+  <g class="ov" data-k="servo">
+    <polyline class="l5 ovl" points="60,378 14,378 14,20 652,20 652,156 640,156"/>
+    <polyline class="lg ovl" points="60,396 42,396 42,186 360,186"/>
+    <line class="wire ovl" x1="220" y1="396" x2="360" y2="396"/>
+    <circle class="pring" cx="374" cy="396" r="10"/>
+    <circle class="pring" cx="626" cy="156" r="10"/>
+    <circle class="pring" cx="374" cy="186" r="10"/>
+  </g>
+  <g class="ov" data-k="mos">
+    <polyline class="l5 ovl" points="60,426 14,426 14,20 652,20 652,156 640,156"/>
+    <polyline class="lg ovl" points="60,444 42,444 42,186 360,186"/>
+    <line class="wire ovl" x1="220" y1="426" x2="360" y2="426"/>
+    <circle class="pring" cx="374" cy="426" r="10"/>
+    <circle class="pring" cx="626" cy="156" r="10"/>
+    <circle class="pring" cx="374" cy="186" r="10"/>
+  </g>
+  <g class="ov" data-k="oled">
+    <polyline class="l33 ovl" points="60,614 28,614 28,36 340,36 340,156 360,156"/>
+    <polyline class="lg ovl" points="60,632 42,632 42,186 360,186"/>
+    <polyline class="wire ovl" points="360,456 345,456 345,614 220,614"/>
+    <polyline class="wire ovl" points="360,546 352,546 352,632 220,632"/>
+    <circle class="pring" cx="374" cy="456" r="10"/>
+    <circle class="pring" cx="374" cy="546" r="10"/>
+    <circle class="pring" cx="374" cy="156" r="10"/>
+    <circle class="pring" cx="374" cy="186" r="10"/>
+  </g>
+  <g class="ov" data-k="reed">
+    <polyline class="l33 ovl" points="940,288 986,288 986,730 28,730 28,36 340,36 340,156 360,156"/>
+    <polyline class="lg ovl" points="940,306 958,306 958,186 640,186"/>
+    <line class="wire ovl" x1="640" y1="306" x2="780" y2="306"/>
+    <circle class="pring" cx="626" cy="306" r="10"/>
+    <circle class="pring" cx="374" cy="156" r="10"/>
+    <circle class="pring" cx="626" cy="186" r="10"/>
+  </g>
+  <g class="ov" data-k="led">
+    <polyline class="lg ovl" points="940,444 958,444 958,186 640,186"/>
+    <line class="wire ovl" x1="640" y1="336" x2="780" y2="336"/>
+    <line class="wire ovl" x1="640" y1="396" x2="780" y2="396"/>
+    <line class="wire ovl" x1="640" y1="426" x2="780" y2="426"/>
+    <circle class="pring" cx="626" cy="336" r="10"/>
+    <circle class="pring" cx="626" cy="396" r="10"/>
+    <circle class="pring" cx="626" cy="426" r="10"/>
+    <circle class="pring" cx="626" cy="186" r="10"/>
+  </g>
+  <g class="ov" data-k="buz">
+    <polyline class="l33 ovl" points="940,514 986,514 986,730 28,730 28,36 340,36 340,156 360,156"/>
+    <polyline class="lg ovl" points="940,532 958,532 958,186 640,186"/>
+    <path class="wire ovl" d="M640 366 H740 V390 A6 6 0 0 1 740 402 V420 A6 6 0 0 1 740 432 V514 H780"/>
+    <circle class="pring" cx="626" cy="366" r="10"/>
+    <circle class="pring" cx="374" cy="156" r="10"/>
+    <circle class="pring" cx="626" cy="186" r="10"/>
+  </g>
+  <text class="sm" x="40" y="764">신호선(파랑)은 안쪽 보드로, 전원선은 바깥쪽 줄로 가요. ● 점이 찍힌 곳만 연결이고, 반원으로 넘어가는 곳은 연결이 아니에요.</text>
+  <text class="sm" x="40" y="784">실제 브레드보드에서는 3.3V 줄 = 가운데 왼쪽 + 줄, 5V 줄 = 가운데 오른쪽 + 줄, GND 줄 = 가운데 − 줄 두 개(보드 안에서 서로 이어져 있음)예요.</text>
+  <text class="sm" x="40" y="804">보드에 인쇄된 D4는 코드의 GPIO4(코드에서 4)와 같은 핀이에요.</text>
+</svg>
+<svg class="tall" viewBox="0 0 420 1180" role="img" aria-label="휴대폰용 배선도. 위에는 USB-C가 위로 오게 그린 실제 ESP32 보드(HW-394)와 쓰는 핀의 이름표, 아래에는 부품마다 어느 핀이나 전원 줄에 꽂는지 적은 카드가 있어요. 위의 버튼으로 부품을 고르면 그 부품만 진하게 보여요.">
+  <g data-w="w-esp" class="wm" data-part="8">
+    <rect class="pcb" x="70" y="30" width="280" height="560" rx="12"/>
+    <rect class="usb" x="178" y="16" width="64" height="30" rx="8"/>
+    <rect class="pbtn" x="96" y="42" width="22" height="18" rx="3"/><circle class="pbtnc" cx="107" cy="51" r="5"/>
+    <rect class="pbtn" x="302" y="42" width="22" height="18" rx="3"/><circle class="pbtnc" cx="313" cy="51" r="5"/>
+    <text class="pcbs" x="107" y="74" text-anchor="middle">BOOT</text>
+    <text class="pcbs" x="313" y="74" text-anchor="middle">EN</text>
+    <text class="pcbtt" x="210" y="72" text-anchor="middle">ESP32 WROOM</text>
+    <text class="pcbs" x="210" y="89" text-anchor="middle">HW-394 · USB-C · 30핀</text>
+    <rect class="can" x="150" y="276" width="120" height="276" rx="4"/>
+    <rect class="ant" x="150" y="552" width="120" height="30" rx="2"/>
+    <text class="pcbs cant" x="210" y="418" text-anchor="middle">ESP32 모듈</text>
+    <circle class="hole on" cx="84" cy="106" r="5"/>
+    <circle class="hole on" cx="336" cy="106" r="5"/>
+    <text class="pcbt p33" x="96" y="110">3V3</text>
+    <text class="pcbt p5" x="324" y="110" text-anchor="end">VIN</text>
+    <circle class="hole on" cx="84" cy="136" r="5"/>
+    <circle class="hole on" cx="336" cy="136" r="5"/>
+    <text class="pcbt g" x="96" y="140">GND</text>
+    <text class="pcbt g" x="324" y="140" text-anchor="end">GND</text>
+    <circle class="hole" cx="84" cy="166" r="5"/>
+    <circle class="hole" cx="336" cy="166" r="5"/>
+    <text class="pcbt off" x="96" y="170">D15</text>
+    <text class="pcbt off" x="324" y="170" text-anchor="end">D13</text>
+    <circle class="hole" cx="84" cy="196" r="5"/>
+    <circle class="hole" cx="336" cy="196" r="5"/>
+    <text class="pcbt off" x="96" y="200">D2</text>
+    <text class="pcbt off" x="324" y="200" text-anchor="end">D12</text>
+    <circle class="hole on" cx="84" cy="226" r="5"/>
+    <circle class="hole" cx="336" cy="226" r="5"/>
+    <text class="pcbt s" x="96" y="230">D4</text>
+    <text class="pcbt off" x="324" y="230" text-anchor="end">D14</text>
+    <circle class="hole" cx="84" cy="256" r="5"/>
+    <circle class="hole on" cx="336" cy="256" r="5"/>
+    <text class="pcbt off" x="96" y="260">D16</text>
+    <text class="pcbt s" x="324" y="260" text-anchor="end">D27</text>
+    <circle class="hole" cx="84" cy="286" r="5"/>
+    <circle class="hole on" cx="336" cy="286" r="5"/>
+    <text class="pcbt off" x="96" y="290">D17</text>
+    <text class="pcbt s" x="324" y="290" text-anchor="end">D26</text>
+    <circle class="hole" cx="84" cy="316" r="5"/>
+    <circle class="hole on" cx="336" cy="316" r="5"/>
+    <text class="pcbt off" x="96" y="320">D5</text>
+    <text class="pcbt s" x="324" y="320" text-anchor="end">D25</text>
+    <circle class="hole on" cx="84" cy="346" r="5"/>
+    <circle class="hole on" cx="336" cy="346" r="5"/>
+    <text class="pcbt s" x="96" y="350">D18</text>
+    <text class="pcbt s" x="324" y="350" text-anchor="end">D33</text>
+    <circle class="hole on" cx="84" cy="376" r="5"/>
+    <circle class="hole on" cx="336" cy="376" r="5"/>
+    <text class="pcbt s" x="96" y="380">D19</text>
+    <text class="pcbt s" x="324" y="380" text-anchor="end">D32</text>
+    <circle class="hole on" cx="84" cy="406" r="5"/>
+    <circle class="hole" cx="336" cy="406" r="5"/>
+    <text class="pcbt s" x="96" y="410">D21</text>
+    <text class="pcbt off" x="324" y="410" text-anchor="end">D35</text>
+    <circle class="hole" cx="84" cy="436" r="5"/>
+    <circle class="hole" cx="336" cy="436" r="5"/>
+    <text class="pcbt off" x="96" y="440">RX0</text>
+    <text class="pcbt off" x="324" y="440" text-anchor="end">D34</text>
+    <circle class="hole" cx="84" cy="466" r="5"/>
+    <circle class="hole" cx="336" cy="466" r="5"/>
+    <text class="pcbt off" x="96" y="470">TX0</text>
+    <text class="pcbt off" x="324" y="470" text-anchor="end">VN</text>
+    <circle class="hole on" cx="84" cy="496" r="5"/>
+    <circle class="hole" cx="336" cy="496" r="5"/>
+    <text class="pcbt s" x="96" y="500">D22</text>
+    <text class="pcbt off" x="324" y="500" text-anchor="end">VP</text>
+    <circle class="hole" cx="84" cy="526" r="5"/>
+    <circle class="hole" cx="336" cy="526" r="5"/>
+    <text class="pcbt off" x="96" y="530">D23</text>
+    <text class="pcbt off" x="324" y="530" text-anchor="end">EN</text>
+  </g>
+  <g class="wk" data-k="pw" data-w="w-rails">
+    <line class="l33" x1="70" y1="106" x2="64" y2="106"/><g class="ptag t33"><rect x="6" y="98" width="58" height="16" rx="8"/><text x="35" y="110">3.3V 줄</text></g>
+    <line class="lg" x1="70" y1="136" x2="64" y2="136"/><g class="ptag tgnd"><rect x="6" y="128" width="58" height="16" rx="8"/><text x="35" y="140">GND 줄</text></g>
+    <line class="l5" x1="350" y1="106" x2="356" y2="106"/><g class="ptag t5"><rect x="356" y="98" width="58" height="16" rx="8"/><text x="385" y="110">5V 줄</text></g>
+    <line class="lg" x1="350" y1="136" x2="356" y2="136"/><g class="ptag tgnd"><rect x="356" y="128" width="58" height="16" rx="8"/><text x="385" y="140">GND 줄</text></g>
+  </g>
+  <g class="wk" data-k="ds"><line class="wire" x1="70" y1="226" x2="64" y2="226"/><g class="ptag tsig"><rect x="6" y="218" width="58" height="16" rx="8"/><text x="35" y="230">온도</text></g></g>
+  <g class="wk" data-k="servo"><line class="wire" x1="70" y1="346" x2="64" y2="346"/><g class="ptag tsig"><rect x="6" y="338" width="58" height="16" rx="8"/><text x="35" y="350">서보</text></g></g>
+  <g class="wk" data-k="mos"><line class="wire" x1="70" y1="376" x2="64" y2="376"/><g class="ptag tsig"><rect x="6" y="368" width="58" height="16" rx="8"/><text x="35" y="380">팬</text></g></g>
+  <g class="wk" data-k="oled"><line class="wire" x1="70" y1="406" x2="64" y2="406"/><g class="ptag tsig"><rect x="6" y="398" width="58" height="16" rx="8"/><text x="35" y="410">OLED</text></g></g>
+  <g class="wk" data-k="oled"><line class="wire" x1="70" y1="496" x2="64" y2="496"/><g class="ptag tsig"><rect x="6" y="488" width="58" height="16" rx="8"/><text x="35" y="500">OLED</text></g></g>
+  <g class="wk" data-k="reed"><line class="wire" x1="350" y1="256" x2="356" y2="256"/><g class="ptag tsig"><rect x="356" y="248" width="58" height="16" rx="8"/><text x="385" y="260">리드</text></g></g>
+  <g class="wk" data-k="led"><line class="wire" x1="350" y1="286" x2="356" y2="286"/><g class="ptag tsig"><rect x="356" y="278" width="58" height="16" rx="8"/><text x="385" y="290">LED R</text></g></g>
+  <g class="wk" data-k="buz"><line class="wire" x1="350" y1="316" x2="356" y2="316"/><g class="ptag tsig"><rect x="356" y="308" width="58" height="16" rx="8"/><text x="385" y="320">부저</text></g></g>
+  <g class="wk" data-k="led"><line class="wire" x1="350" y1="346" x2="356" y2="346"/><g class="ptag tsig"><rect x="356" y="338" width="58" height="16" rx="8"/><text x="385" y="350">LED Y</text></g></g>
+  <g class="wk" data-k="led"><line class="wire" x1="350" y1="376" x2="356" y2="376"/><g class="ptag tsig"><rect x="356" y="368" width="58" height="16" rx="8"/><text x="385" y="380">LED G</text></g></g>
+  <g class="wk" data-k="ds"><g data-w="w-ds" class="wm" data-part="5">
+    <rect class="mod" x="10" y="612" width="195" height="128" rx="8"/>
+    <text class="tt" x="20" y="634">DS18B20 ×2</text>
+    <text class="pl" x="20" y="660">노랑 DATA</text><g class="ptag tsig"><rect x="130" y="648" width="66" height="16" rx="8"/><text x="163" y="660">D4</text></g>
+    <text class="pl" x="20" y="682">빨강 VCC</text><g class="ptag t33"><rect x="130" y="670" width="66" height="16" rx="8"/><text x="163" y="682">3.3V 줄</text></g>
+    <text class="pl" x="20" y="704">검정 GND</text><g class="ptag tgnd"><rect x="130" y="692" width="66" height="16" rx="8"/><text x="163" y="704">GND 줄</text></g>
+    <text class="sm" x="20" y="726">DATA–3.3V 줄 사이 4.7kΩ</text>
+  </g></g>
+  <g class="wk" data-k="oled"><g data-w="w-oled" class="wm" data-part="9">
+    <rect class="mod" x="215" y="612" width="195" height="128" rx="8"/>
+    <text class="tt" x="225" y="634">OLED 0.96인치</text>
+    <text class="pl" x="225" y="660">SDA</text><g class="ptag tsig"><rect x="335" y="648" width="66" height="16" rx="8"/><text x="368" y="660">D21</text></g>
+    <text class="pl" x="225" y="682">SCL</text><g class="ptag tsig"><rect x="335" y="670" width="66" height="16" rx="8"/><text x="368" y="682">D22</text></g>
+    <text class="pl" x="225" y="704">VCC</text><g class="ptag t33"><rect x="335" y="692" width="66" height="16" rx="8"/><text x="368" y="704">3.3V 줄</text></g>
+    <text class="pl" x="225" y="726">GND</text><g class="ptag tgnd"><rect x="335" y="714" width="66" height="16" rx="8"/><text x="368" y="726">GND 줄</text></g>
+  </g></g>
+  <g class="wk" data-k="led"><g data-w="w-led" class="wm" data-part="9">
+    <rect class="mod" x="10" y="750" width="195" height="128" rx="8"/>
+    <text class="tt" x="20" y="772">신호등 LED 모듈</text>
+    <text class="pl" x="20" y="798">R</text><g class="ptag tsig"><rect x="130" y="786" width="66" height="16" rx="8"/><text x="163" y="798">D26</text></g>
+    <text class="pl" x="20" y="820">Y</text><g class="ptag tsig"><rect x="130" y="808" width="66" height="16" rx="8"/><text x="163" y="820">D33</text></g>
+    <text class="pl" x="20" y="842">G</text><g class="ptag tsig"><rect x="130" y="830" width="66" height="16" rx="8"/><text x="163" y="842">D32</text></g>
+    <text class="pl" x="20" y="864">GND</text><g class="ptag tgnd"><rect x="130" y="852" width="66" height="16" rx="8"/><text x="163" y="864">GND 줄</text></g>
+  </g></g>
+  <g class="wk" data-k="reed"><g data-w="w-reed" class="wm" data-part="10">
+    <rect class="mod" x="215" y="750" width="195" height="128" rx="8"/>
+    <text class="tt" x="225" y="772">리드스위치 모듈</text>
+    <text class="pl" x="225" y="798">DO</text><g class="ptag tsig"><rect x="335" y="786" width="66" height="16" rx="8"/><text x="368" y="798">D27</text></g>
+    <text class="pl" x="225" y="820">VCC</text><g class="ptag t33"><rect x="335" y="808" width="66" height="16" rx="8"/><text x="368" y="820">3.3V 줄</text></g>
+    <text class="pl" x="225" y="842">GND</text><g class="ptag tgnd"><rect x="335" y="830" width="66" height="16" rx="8"/><text x="368" y="842">GND 줄</text></g>
+  </g></g>
+  <g class="wk" data-k="buz"><g data-w="w-buz" class="wm" data-part="9">
+    <rect class="mod" x="10" y="888" width="195" height="106" rx="8"/>
+    <text class="tt" x="20" y="910">액티브 부저 모듈</text>
+    <text class="pl" x="20" y="936">I/O</text><g class="ptag tsig"><rect x="130" y="924" width="66" height="16" rx="8"/><text x="163" y="936">D25</text></g>
+    <text class="pl" x="20" y="958">VCC</text><g class="ptag t33"><rect x="130" y="946" width="66" height="16" rx="8"/><text x="163" y="958">3.3V 줄</text></g>
+    <text class="pl" x="20" y="980">GND</text><g class="ptag tgnd"><rect x="130" y="968" width="66" height="16" rx="8"/><text x="163" y="980">GND 줄</text></g>
+  </g></g>
+  <g class="wk" data-k="servo"><g data-w="w-servo" class="wm" data-part="4">
+    <rect class="mod" x="215" y="888" width="195" height="106" rx="8"/>
+    <text class="tt" x="225" y="910">SG90 서보</text>
+    <text class="pl" x="225" y="936">주황 신호</text><g class="ptag tsig"><rect x="335" y="924" width="66" height="16" rx="8"/><text x="368" y="936">D18</text></g>
+    <text class="pl" x="225" y="958">빨강 5V</text><g class="ptag t5"><rect x="335" y="946" width="66" height="16" rx="8"/><text x="368" y="958">5V 줄</text></g>
+    <text class="pl" x="225" y="980">갈색 GND</text><g class="ptag tgnd"><rect x="335" y="968" width="66" height="16" rx="8"/><text x="368" y="980">GND 줄</text></g>
+  </g></g>
+  <g class="wk" data-k="mos"><g data-w="w-mos" class="wm" data-part="8">
+    <rect class="mod" x="10" y="1004" width="195" height="106" rx="8"/>
+    <text class="tt" x="20" y="1026">MOSFET 모듈</text>
+    <text class="pl" x="20" y="1052">PWM</text><g class="ptag tsig"><rect x="130" y="1040" width="66" height="16" rx="8"/><text x="163" y="1052">D19</text></g>
+    <text class="pl" x="20" y="1074">VIN+</text><g class="ptag t5"><rect x="130" y="1062" width="66" height="16" rx="8"/><text x="163" y="1074">5V 줄</text></g>
+    <text class="pl" x="20" y="1096">VIN−·GND</text><g class="ptag tgnd"><rect x="130" y="1084" width="66" height="16" rx="8"/><text x="163" y="1096">GND 줄</text></g>
+  </g></g>
+  <g class="wk" data-k="mos"><g data-w="w-fan" class="wm" data-part="3">
+    <rect class="mod" x="215" y="1004" width="195" height="106" rx="8"/>
+    <text class="tt" x="225" y="1026">5V 쿨링팬 4010</text>
+    <text class="pl" x="225" y="1052">빨강</text><g class="ptag tink"><rect x="335" y="1040" width="66" height="16" rx="8"/><text x="368" y="1052">OUT+</text></g>
+    <text class="pl" x="225" y="1074">검정</text><g class="ptag tink"><rect x="335" y="1062" width="66" height="16" rx="8"/><text x="368" y="1074">OUT−</text></g>
+    <text class="sm" x="225" y="1096">1N5819 띠를 + 쪽에</text>
+  </g></g>
+  <text class="sm" x="10" y="1130">전원 줄은 브레드보드 가운데 +/− 줄 두 쌍이에요.</text>
+  <text class="sm" x="10" y="1148">왼쪽 쌍: 3V3·GND (3.3V 줄) · 오른쪽 쌍: VIN·GND (5V 줄)</text>
+  <text class="sm" x="10" y="1166">파란 이름표는 그 이름의 보드 핀(D4 = GPIO4)에 꽂아요.</text>
+</svg>
+      <figcaption>
+        <span class="key"><span class="sw"></span>신호선</span>
+        <span class="key"><span class="chip csig">D25</span>그 이름의 보드 핀</span>
+        <span class="key"><span class="chip c33">3.3V 줄</span>가운데 왼쪽 + 줄 (3V3)</span>
+        <span class="key"><span class="chip c5">5V 줄</span>가운데 오른쪽 + 줄 (VIN)</span>
+        <span class="key"><span class="chip cgnd">GND 줄</span>가운데 − 줄 (어느 쪽이든)</span>
+        <span>부품을 누르면 아래 설명이 바뀌어요.</span>
+      </figcaption>
+    </figure>
+    <div class="wstep" id="wstep" aria-live="polite"></div>
+    <script src="wire.js"></script>
+
+    <section>
+      <h2>핀 연결표</h2>
+      <div class="tablebox">
+        <table>
+          <thead><tr><th>부품</th><th>부품 쪽</th><th>연결할 곳</th><th>메모</th></tr></thead>
+          <tbody>
+            <tr><td>ESP32 (HW-394)</td><td class="num">왼쪽 위 3V3 · GND<br>오른쪽 위 VIN · GND</td><td class="num">가운데 왼쪽 + / − 줄<br>가운데 오른쪽 + / − 줄</td><td>USB-C를 위로 두고 꽂아요. 왼쪽 쌍이 3.3V 줄, 오른쪽 쌍이 5V 줄이 돼요. 두 − 줄은 보드 GND로 이미 이어져 있어요.</td></tr>
+            <tr><td>DS18B20 ×2</td><td class="num">빨강 / 검정 / 노랑</td><td class="num">3.3V 줄 / GND 줄 / D4</td><td>DATA와 3.3V 사이에 4.7kΩ 하나. 두 센서는 같은 세 선에 병렬로 연결해요.</td></tr>
+            <tr><td>리드스위치 모듈</td><td class="num">VCC / GND / DO</td><td class="num">3.3V 줄 / GND 줄 / D27</td><td>5V에 연결하지 않아요. ESP32 입력은 3.3V까지예요.</td></tr>
+            <tr><td>OLED</td><td class="num">VCC / GND / SDA / SCL</td><td class="num">3.3V 줄 / GND 줄 / D21 / D22</td><td>I2C 기본 핀이에요. 두 핀 사이 RX0·TX0은 비워 둬요.</td></tr>
+            <tr><td>신호등 LED 모듈</td><td class="num">R / Y / G / GND</td><td class="num">D26 / D33 / D32 / GND 줄</td><td>HIGH면 켜져요. 모듈에 저항이 붙어 있는지 받아서 확인해요.</td></tr>
+            <tr><td>액티브 부저 모듈</td><td class="num">VCC / GND / I/O</td><td class="num">3.3V 줄 / GND 줄 / D25</td><td>LOW일 때 울리는 형이면 평소 HIGH로 둬요. 반대 형도 있어요.</td></tr>
+            <tr><td>SG90 서보</td><td class="num">빨강 / 갈색 / 주황</td><td class="num">5V 줄 / GND 줄 / D18</td><td>신호선만으로는 움직이지 않아요. 전원 두 선도 꼭 연결해요.</td></tr>
+            <tr><td>MOSFET 모듈</td><td class="num">VIN+ / VIN− / PWM / GND</td><td class="num">5V 줄 / GND 줄 / D19 / GND 줄</td><td>단자 이름은 보드에 인쇄된 것을 따라요.</td></tr>
+            <tr><td>쿨링팬</td><td class="num">빨강 / 검정</td><td class="num">MOSFET OUT+ / OUT−</td><td>1N5819를 팬 두 선 사이에 달고, 띠를 + 쪽으로 해요.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>연결 전에 확인할 것</h2>
+      <ol class="checks">
+        <li><b>선을 꽂거나 뺄 때는 USB를 먼저 빼요.</b> 켜진 상태에서 5V 선이 GPIO나 3V3 핀에 닿으면 보드가 망가질 수 있어요.</li>
+        <li><b>선 색은 상품마다 다를 수 있어요.</b> DS18B20과 서보의 선 색은 상세 페이지 설명과 실물을 먼저 봐요.</li>
+        <li><b>서보와 팬이 같이 돌 때 보드가 재부팅되면</b> 5V 2A 어댑터를 따로 써서 5V 줄에 넣고, 어댑터 GND를 GND 줄에 묶어요.</li>
+        <li><b>보드의 D2, D5, D12, D15는 쓰지 않았어요.</b> BOOT 버튼의 GPIO0과 함께 부팅 방식에 영향을 주는 핀이에요. RX0·TX0도 업로드에 쓰여서 비워 둬요.</li>
+        <li><b>보드에 인쇄된 이름과 코드 번호는 같은 핀이에요.</b> 보드의 D4가 코드의 GPIO4(코드에서는 4)예요.</li>
+        <li><b>가운데 전원 줄은 보드 밑에 가려져 있어요.</b> 보드 위(USB 쪽)나 아래로 드러난 구멍에 꽂아요. 줄이 중간에 끊긴 브레드보드도 있어서, 처음 한 번 멀티미터로 위아래가 이어졌는지 확인해요.</li>
+        <li><b>OLED와 MOSFET 모듈은 납땜이 필요할 수 있어요.</b> 핀이나 단자가 따로 오는지 받아서 확인해요.</li>
+      </ol>
+    </section>
+  </section>
+
+  <!-- 두 화면이 함께 쓰는 부품 목록 -->
+  <section class="cols">
+    <ol class="parts" id="plist"></ol>
+    <article class="card" id="detail" aria-live="polite"></article>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
