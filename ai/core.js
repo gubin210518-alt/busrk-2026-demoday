@@ -1,4 +1,5 @@
 // ===== 부스럭 예냉박스 AI 코어 (브라우저/Node 공용) =====
+// model.h에는 #pragma once를 넣지 않아요. .ino 안에 그대로 붙여 넣어도 경고가 나지 않게요.
 const AI = (() => {
   const DT = 10 / 60;          // 격자 간격: 10초 (분 단위)
   const H = 2;                 // 예측 한 걸음: 2분
@@ -105,6 +106,28 @@ const AI = (() => {
     return -2;
   }
 
+  // ---- 뚜껑·팬 보정: 최근 2분 안에 뚜껑이 열렸거나 팬이 꺼졌으면 기울기가 틀어져요. ----
+  // 이때는 마지막으로 "깨끗했던" 시점의 AI 예측을 그대로 두고, 그 뒤 지난 시간만큼만 줄여요.
+  // (펌웨어 precool_ai_ble.ino의 updateAi()와 같은 규칙)
+  function cleanAt(g, i) {
+    if (i < LAG) return false;
+    for (let k = i - LAG; k <= i; k++) { const s = g[k]; if (!s.fan || s.lid || !isFinite(s.b) || !isFinite(s.c)) return false; }
+    return true;
+  }
+  // 반환: { eta, hold }  eta: 남은 분, -1 모름, -2 못 닿음 / hold: 유지값이면 true
+  function etaAIHold(m, g, i, target, path) {
+    if (isFinite(g[i].b) && g[i].b <= target) return { eta: 0, hold: false };
+    for (let j = i; j >= LAG; j--) {
+      if (!cleanAt(g, j)) continue;
+      const s = g[j], p = g[j - LAG];
+      const e = etaAI(m, s.b, s.c, (s.b - p.b) / H, (s.c - p.c) / H, target, j === i ? path : null);
+      if (j === i) return { eta: e, hold: false };
+      if (e < 0) return { eta: e, hold: true };
+      return { eta: Math.max(0, e - (g[i].t - s.t)), hold: true };
+    }
+    return { eta: -1, hold: false };
+  }
+
   // ---- 펌웨어와 같은 뉴턴/직선 예측 (최근 10분, 2분 이상 모였을 때) ----
   function fitSlope(x, y) {
     const n = x.length; if (n < 2) return null;
@@ -209,7 +232,6 @@ const AI = (() => {
 // 학습 데이터: 실험 ${m.runs}개, 학습 표본 ${m.n}개 ${m.note ? '(' + m.note + ')' : ''}
 // 2분 뒤 온도 변화 학습 오차: 식품칸 ${m.fitMaeB.toFixed(3)}℃, 냉기실 ${m.fitMaeC.toFixed(3)}℃
 // 특징 순서: [식품칸-냉기실, 냉기실, 식품칸 2분 기울기(℃/분), 냉기실 2분 기울기(℃/분)]
-#pragma once
 #define MODEL_READY 1
 #define MODEL_H_MIN ${m.H.toFixed(1)}f
 static const char MODEL_INFO[] = "runs=${m.runs} n=${m.n}${m.note ? ' ' + m.note.replace(/[^A-Za-z0-9 _.-]/g, '') : ''}";
@@ -220,6 +242,6 @@ static const float MODEL_WC[5]   = { ${f(m.wc)} };  // 냉기실 2분 뒤 변화
 `;
   }
 
-  return { toHeader, DT, H, LAG, resample, samples, train, step, etaAI, etaNewton, etaLinear, evaluate, simulateRun, simParams, simStep, rng, q16 };
+  return { toHeader, DT, H, LAG, resample, samples, train, step, etaAI, cleanAt, etaAIHold, etaNewton, etaLinear, evaluate, simulateRun, simParams, simStep, rng, q16 };
 })();
 if (typeof module !== 'undefined') module.exports = AI;
