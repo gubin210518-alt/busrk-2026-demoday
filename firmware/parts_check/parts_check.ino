@@ -76,7 +76,7 @@ void checkTemp() {
   nSensors = min((int)sensors.getDeviceCount(), 4);
   Serial.printf("  찾은 센서: %d개 (2개가 정상)\n", nSensors);
   if (nSensors == 0) {
-    Serial.println("  -> 하나도 없음: 노랑선이 D4 줄인지, 4.7kΩ 저항(D4~3.3V)이 있는지, 빨강·검정이 바뀌지 않았는지 확인");
+    Serial.println("  -> 하나도 없음: 노랑선이 D4 단자에 있는지, 4.7kΩ 저항(D4~3.3V)이 있는지, 빨강·검정이 바뀌지 않았는지 확인");
   }
   sensors.setWaitForConversion(true);
   for (int i = 0; i < nSensors; i++) {
@@ -90,7 +90,7 @@ void checkTemp() {
     printAddr(addr[i]);
     Serial.println();
   }
-  if (nSensors == 1) Serial.println("  -> 1개만 잡힘: 두 번째 센서 노랑선이 D4 줄에 꽂혔는지 확인");
+  if (nSensors == 1) Serial.println("  -> 1개만 잡힘: 두 번째 센서 노랑선이 D4 단자에 들어갔는지 확인");
   if (nSensors >= 1) Serial.println("  센서 하나를 손으로 쥐고 실시간 보기에서 어느 번호가 오르는지 보세요.");
   sensors.setWaitForConversion(false);
   sensors.requestTemperatures();
@@ -137,7 +137,7 @@ void checkServo() {
     oledMsg(b, "D18, 5V");
     delay(1200);
   }
-  Serial.println("  -> 안 움직이면 주황선 D18, 빨강 5V 줄, 갈색 GND 확인");
+  Serial.println("  -> 안 움직이면 주황선 D18, 빨강 5V 묶음, 갈색 GND 확인");
 }
 
 // ---------------- 5. 팬 ----------------
