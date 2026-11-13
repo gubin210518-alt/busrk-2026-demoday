@@ -3,93 +3,104 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>부스럭 AI 시뮬레이터</title>
+<title>AI 시뮬레이터 | 부스럭 예냉박스</title>
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
+/* 부스럭 예냉박스 공통 디자인(홈페이지 site.css와 같은 색). 식품칸 온도선이 주인공이고, 1시간 제한은 딸기 빨강, 목표는 잎 초록. */
 :root{
-  --bg:#F3F3F5; --card:#FFFFFF; --ink:#052149; --text:#1A2635; --muted:#6B7385; --line:#E3E6EE;
-  --blue:#151FAF; --blue2:#5553C4; --soft:#F1F2FB; --accent:#5E68ED;
-  --green:#2E9E6B; --yellow:#E0A21B; --red:#C9372C; --cold:#1F8FD6;
-  --shadow:0 8px 28px rgba(20,30,90,.08);
+  --frost:#EAF2F5; --ice:#CFE2EA; --rule:#C3D8E1; --deep:#0F2A3A; --mist:#4F7180; --paper:#F7FBFC;
+  --berry:#D7263D; --leaf:#1E6B4B; --amber:#C98E00; --chill:#5C9DBA;
+  --bg:var(--frost); --card:var(--paper); --ink:var(--deep); --text:var(--deep); --muted:var(--mist); --line:var(--rule);
+  --blue:var(--deep); --soft:#E1EDF2; --accent:var(--deep);
+  --green:var(--leaf); --yellow:#E8A400; --red:var(--berry); --cold:var(--chill);
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);
-  font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,sans-serif;font-size:15px}
-button,input,select{font:inherit}
-.top{background:linear-gradient(100deg,var(--blue2),var(--blue));color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.brand{font-weight:800;font-size:19px;letter-spacing:-.3px}
-.brand small{display:block;font-weight:500;font-size:12px;opacity:.8;letter-spacing:0}
+  font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;font-size:15.5px;line-height:1.6;word-break:keep-all}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--berry);outline-offset:2px}
+.top{background:var(--deep);color:#fff;padding:14px 28px;display:flex;align-items:center;gap:12px 14px;flex-wrap:wrap}
+.brand{font-family:Hahmlet,serif;font-weight:700;font-size:22px;letter-spacing:-.01em;line-height:1.25}
+.brand small{display:block;font-family:"Pretendard Variable",Pretendard,sans-serif;font-weight:400;font-size:13px;opacity:.75;letter-spacing:0;margin-top:2px}
 .top .sp{flex:1}
-.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.14);font-size:13px}
-.dot{width:9px;height:9px;border-radius:50%;background:#9aa}
-.dot.on{background:#5BE39A;box-shadow:0 0 0 3px rgba(91,227,154,.25)}
-.dot.sim{background:#FFC857}
-.btn{border:0;border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:700;background:var(--soft);color:var(--blue)}
-.btn:hover{filter:brightness(.97)}
-.btn.pri{background:var(--blue);color:#fff}
-.top .btn{background:rgba(255,255,255,.16);color:#fff}
-.top .btn.pri{background:#fff;color:var(--blue)}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 4px;font-size:14px}
+.dot{width:10px;height:10px;border-radius:50%;background:#7E95A1}
+.dot.on{background:#4FD18B}
+.dot.sim{background:#E8A400}
+.btn{border:0;border-radius:3px;padding:9px 15px;min-height:40px;cursor:pointer;font-weight:600;background:transparent;color:var(--deep);box-shadow:inset 0 0 0 2px var(--deep)}
+.btn:hover{background:var(--deep);color:#fff}
+.btn.pri{background:var(--deep);color:#fff}
+.top .btn{color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
+.top .btn:hover{background:#fff;color:var(--deep)}
+.top .btn.pri{background:#fff;color:var(--deep);box-shadow:none}
+.top .btn.pri:hover{background:var(--ice)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.tabs{display:flex;gap:4px;padding:12px 24px 0;flex-wrap:wrap}
-.tab{border:0;background:none;padding:10px 16px;border-radius:10px 10px 0 0;cursor:pointer;color:var(--muted);font-weight:700}
-.tab.on{background:var(--card);color:var(--blue)}
-main{padding:0 24px 32px}
-.panel{display:none;background:var(--card);border-radius:0 16px 16px 16px;box-shadow:var(--shadow);padding:22px}
+.tabs{display:flex;gap:4px 26px;padding:14px 28px 0;flex-wrap:wrap;border-bottom:1px solid var(--rule)}
+.tab{border:0;background:none;padding:10px 0 9px;cursor:pointer;color:var(--mist);font-family:Hahmlet,serif;font-weight:600;font-size:18px;border-bottom:4px solid transparent;margin-bottom:-1px;min-height:44px}
+.tab:hover{color:var(--deep)}
+.tab.on{color:var(--deep);border-bottom-color:var(--berry)}
+main{padding:22px 28px 40px}
+.panel{display:none}
 .panel.on{display:block}
-.grid{display:grid;gap:14px}
+.grid{display:grid;gap:16px}
 .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
-.tile{background:var(--soft);border-radius:14px;padding:14px 16px;min-width:0}
-.tile .k{font-size:13px;color:var(--accent);font-weight:700}
-.tile .v{font-size:32px;font-weight:800;color:var(--ink);margin-top:4px;font-variant-numeric:tabular-nums;white-space:nowrap}
-.tile .s{font-size:12.5px;color:var(--muted);margin-top:2px}
+.tile{border-top:3px solid var(--deep);padding:12px 2px 4px;min-width:0}
+.tile .k{font-size:14px;color:var(--mist);font-weight:600}
+.tile .v{font-size:38px;font-weight:700;color:var(--deep);margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.02em;line-height:1.2}
+.tile .s{font-size:13.5px;color:var(--mist);margin-top:2px}
 .status{display:flex;align-items:center;gap:14px}
 .status>div:last-child{min-width:0}
 #vL{white-space:normal}
-.lights{display:flex;gap:6px;background:#1d2433;padding:7px 8px;border-radius:99px}
-.lights i{width:18px;height:18px;border-radius:50%;background:#3a4252;display:block}
-.lights i.r.on{background:#FF4D3D;box-shadow:0 0 10px #FF4D3D}
+.lights{display:flex;gap:6px;background:var(--deep);padding:7px 8px;border-radius:99px;flex:none}
+.lights i{width:18px;height:18px;border-radius:50%;background:#2B4556;display:block}
+.lights i.r.on{background:#FF4D5E;box-shadow:0 0 10px #FF4D5E}
 .lights i.y.on{background:#FFC23D;box-shadow:0 0 10px #FFC23D}
 .lights i.g.on{background:#45E08F;box-shadow:0 0 10px #45E08F}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.row label{font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
-input[type=number],select{width:84px;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--text)}
-h3{margin:0 0 10px;color:var(--ink);font-size:17px}
-.card{border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.row label{font-size:14px;color:var(--mist);display:flex;align-items:center;gap:6px}
+input[type=number],select{width:84px;padding:7px 8px;min-height:38px;border:1px solid var(--rule);border-radius:3px;background:#fff;color:var(--deep);font-variant-numeric:tabular-nums}
+h3{margin:0 0 12px;color:var(--deep);font-family:Hahmlet,serif;font-size:20px;font-weight:600}
+.card{background:var(--paper);border:1px solid var(--rule);border-radius:4px;padding:18px;min-width:0}
 canvas{width:100%;display:block}
-.eta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.eta .tile .v{font-size:26px}
-.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:12px;font-weight:700;background:var(--soft);color:var(--blue)}
-.badge.warn{background:#FFF3D6;color:#8A5A00}
-.badge.sim{background:#FFF3D6;color:#8A5A00}
-.badge.real{background:#E3F6EC;color:#1D6B47}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
-th{color:var(--muted);font-weight:700;font-size:12.5px}
+.eta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.eta .tile .v{font-size:30px}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:12.5px;font-weight:700;background:var(--soft);color:var(--deep)}
+.badge.warn,.badge.sim{background:#FBEFC9;color:#6E4E00}
+.badge.real{background:#DCEFE5;color:var(--leaf)}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{padding:9px 10px 9px 0;border-bottom:1px solid var(--rule);text-align:left;white-space:nowrap}
+th{color:var(--mist);font-weight:600;font-size:13px}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 th.ctr,td.ctr{text-align:center}
-.tablewrap{overflow-x:auto}
-.note{font-size:13px;color:var(--muted);line-height:1.6}
-.callout{background:#FFF8E6;border:1px solid #F5DFA6;color:#6B4A00;border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.6}
-.callout.ok{background:#EAF7F0;border-color:#BFE6D0;color:#1D5B3D}
+.tablewrap{overflow-x:auto;border-top:2px solid var(--deep)}
+.note{font-size:14px;color:var(--mist);line-height:1.6}
+.callout{background:#FBF3DA;border-left:4px solid #E8A400;color:#5C4300;border-radius:0;padding:10px 14px;font-size:14px;line-height:1.6}
+.callout.ok{background:#E2F1E9;border-left-color:var(--leaf);color:#174E36}
 .bars .b{display:grid;grid-template-columns:130px 1fr 90px;gap:10px;align-items:center;margin:8px 0}
-.bars .track{height:22px;background:var(--soft);border-radius:6px;overflow:hidden}
-.bars .fill{height:100%;border-radius:6px}
-pre{background:#0F1630;color:#DDE3FF;padding:14px;border-radius:12px;overflow:auto;font-size:12.5px;line-height:1.5;max-height:360px}
-.console{height:120px;overflow:auto;background:#0F1630;color:#AEB9E8;font:12px/1.5 ui-monospace,Consolas,monospace;padding:8px 10px;border-radius:10px;margin-top:8px}
+.bars .track{height:22px;background:var(--soft);border-radius:2px;overflow:hidden}
+.bars .fill{height:100%;border-radius:2px}
+pre{background:#0F2A3A;color:#DCEAF0;padding:14px;border-radius:4px;overflow:auto;font-size:12.5px;line-height:1.55;max-height:360px;word-break:normal}
+.console{height:120px;overflow:auto;background:#0F2A3A;color:#B7CFD9;font:12.5px/1.5 ui-monospace,Consolas,monospace;padding:8px 10px;border-radius:4px;margin-top:8px;word-break:normal}
 .steps{margin:0;padding-left:20px;line-height:1.9}
 .hide{display:none!important}
-.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;color:var(--mist);margin-top:8px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
-.legend i{width:18px;height:3px;border-radius:2px;display:inline-block}
-@media (max-width:900px){#liveGrid{grid-template-columns:minmax(0,1fr)!important}.bars .b{grid-template-columns:96px 1fr 64px}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3,.g2{grid-template-columns:minmax(0,1fr)}main,.tabs{padding-left:12px;padding-right:12px}.top{padding:12px}}
+.legend i{width:20px;height:3px;border-radius:2px;display:inline-block}
+@media (max-width:900px){#liveGrid{grid-template-columns:minmax(0,1fr)!important}.bars .b{grid-template-columns:96px 1fr 64px}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}.g3,.g2{grid-template-columns:minmax(0,1fr)}main{padding-left:16px;padding-right:16px}.tabs{padding-left:16px;padding-right:16px;gap:4px 18px}.top{padding:12px 16px}.tile .v{font-size:30px}.status{flex-direction:column;align-items:flex-start;gap:8px}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <header class="top">
-  <div class="brand">부스럭 예냉박스 · AI 시뮬레이터<small>식품의 골든타임을 지키는 예냉박스 — 학습 모델 만들기와 실시간 모니터</small></div>
+  <div class="brand">예냉박스 AI 시뮬레이터<small>식품칸 온도를 실시간으로 보고, 1℃까지 남은 시간을 예측하는 AI를 학습시켜요</small></div>
   <div class="sp"></div>
-  <a class="btn" href="https://busrk-box3d.vercel.app/about.html" style="text-decoration:none">← 홈페이지</a>
+  <a class="btn" href="https://busrk-box3d.vercel.app/about.html" style="text-decoration:none;display:inline-flex;align-items:center">홈페이지</a>
   <span class="pill"><span class="dot" id="connDot"></span><span id="connText">연결 안 됨</span></span>
   <button class="btn pri" id="btnConnect">ESP32 연결</button>
   <button class="btn" id="btnSim">시뮬레이션 시작</button>
@@ -121,10 +132,10 @@ pre{background:#0F1630;color:#DDE3FF;padding:14px;border-radius:12px;overflow:au
         <div class="row"><label>목표 <input type="number" id="target" value="1" step="0.5">℃</label>
         <label>제한 <input type="number" id="deadline" value="60" step="5">분</label></div></div>
       <canvas id="chart" height="340"></canvas>
-      <div class="legend"><span><i style="background:var(--red)"></i>식품칸</span><span><i style="background:var(--cold)"></i>냉기실</span>
-        <span><i style="background:var(--accent);height:0;border-top:3px dashed var(--accent)"></i>AI 예측 경로</span>
-        <span><i style="background:#2E9E6B;height:0;border-top:2px dashed #2E9E6B"></i>목표 온도</span>
-        <span><i style="background:#999;height:0;border-top:2px dashed #999"></i>제한 시간</span></div>
+      <div class="legend"><span><i style="background:var(--deep);height:4px"></i>식품칸</span><span><i style="background:var(--chill)"></i>냉기실</span>
+        <span><i style="background:none;height:0;border-top:3px dashed var(--deep)"></i>AI 예측 경로</span>
+        <span><i style="background:none;height:0;border-top:2px dashed var(--leaf)"></i>목표 온도</span>
+        <span><i style="background:none;width:0;height:14px;border-left:2px dashed var(--berry)"></i>제한 시간</span></div>
     </div>
     <div class="grid" style="align-content:start">
       <div class="card">
@@ -371,28 +382,28 @@ function drawChart(){
   for (const r of L) { if (isFinite(r.b)) { lo = Math.min(lo, r.b); hi = Math.max(hi, r.b); } if (isFinite(r.c)) { lo = Math.min(lo, r.c); hi = Math.max(hi, r.c); } }
   lo = Math.floor(lo - 1); hi = Math.ceil(hi + 1);
   const X = t => pad.l + (W - pad.l - pad.r) * t / tMax, Y = v => pad.t + (Hh - pad.t - pad.b) * (hi - v) / (hi - lo);
-  x.font = '12px system-ui, sans-serif'; x.fillStyle = '#6B7385'; x.strokeStyle = '#EEF0F5'; x.lineWidth = 1;
+  x.font = '12px "Pretendard Variable", Pretendard, system-ui, sans-serif'; x.fillStyle = '#4F7180'; x.strokeStyle = '#DCE8EE'; x.lineWidth = 1;
   const ys = Math.max(1, Math.ceil((hi - lo) / 7));
   for (let v = Math.ceil(lo); v <= hi; v += ys) { x.beginPath(); x.moveTo(pad.l, Y(v)); x.lineTo(W - pad.r, Y(v)); x.stroke(); x.fillText(v + '℃', 4, Y(v) + 4); }
   const ts = tMax > 150 ? 30 : tMax > 60 ? 15 : 10;
   for (let t = 0; t <= tMax; t += ts) { x.fillText(t + '분', X(t) - 10, Hh - 8); }
   const dash = (v, col, vert) => { x.save(); x.setLineDash([6,5]); x.strokeStyle = col; x.lineWidth = 1.6; x.beginPath();
     if (vert) { x.moveTo(X(v), pad.t); x.lineTo(X(v), Hh - pad.b); } else { x.moveTo(pad.l, Y(v)); x.lineTo(W - pad.r, Y(v)); } x.stroke(); x.restore(); };
-  dash(tg, '#2E9E6B'); dash(dl, '#9AA0AE', true);
+  dash(tg, '#1E6B4B'); dash(dl, '#D7263D', true);
   const line = (key, col) => { x.strokeStyle = col; x.lineWidth = 2.6; x.beginPath(); let on = false;
     for (const r of L) { if (!isFinite(r[key])) { on = false; continue; } on ? x.lineTo(X(r.t), Y(r[key])) : x.moveTo(X(r.t), Y(r[key])); on = true; } x.stroke(); };
   // 뚜껑 열림 구간
-  x.fillStyle = 'rgba(201,55,44,.07)';
+  x.fillStyle = 'rgba(207,226,234,.55)';
   for (let i = 1; i < L.length; i++) if (L[i].lid) x.fillRect(X(L[i-1].t), pad.t, X(L[i].t) - X(L[i-1].t) + .5, Hh - pad.t - pad.b);
-  line('c', '#1F8FD6'); line('b', '#C9372C');
+  line('c', '#5C9DBA'); line('b', '#0F2A3A');
   if (path && path.length > 1) {
     x.save(); x.setLineDash([7,5]); x.lineWidth = 2.4;
-    x.strokeStyle = '#5E68ED'; x.beginPath(); path.forEach((p,i) => { const xx = X(pr.t + p[0]), yy = Y(p[1]); i ? x.lineTo(xx,yy) : x.moveTo(xx,yy); }); x.stroke();
-    x.strokeStyle = 'rgba(31,143,214,.55)'; x.beginPath(); path.forEach((p,i) => { const xx = X(pr.t + p[0]), yy = Y(p[2]); i ? x.lineTo(xx,yy) : x.moveTo(xx,yy); }); x.stroke();
+    x.strokeStyle = '#0F2A3A'; x.beginPath(); path.forEach((p,i) => { const xx = X(pr.t + p[0]), yy = Y(p[1]); i ? x.lineTo(xx,yy) : x.moveTo(xx,yy); }); x.stroke();
+    x.strokeStyle = 'rgba(92,157,186,.6)'; x.beginPath(); path.forEach((p,i) => { const xx = X(pr.t + p[0]), yy = Y(p[2]); i ? x.lineTo(xx,yy) : x.moveTo(xx,yy); }); x.stroke();
     x.restore();
-    if (pr.eA >= 0) { const tt = pr.t + pr.eA; x.fillStyle = '#5E68ED'; x.beginPath(); x.arc(X(tt), Y(tg), 5, 0, 7); x.fill(); x.fillText('AI 예상 ' + Math.round(tt) + '분', Math.min(X(tt) + 8, W - 90), Y(tg) - 8); }
+    if (pr.eA >= 0) { const tt = pr.t + pr.eA; x.fillStyle = '#0F2A3A'; x.beginPath(); x.arc(X(tt), Y(tg), 5, 0, 7); x.fill(); x.fillText('AI 예상 ' + Math.round(tt) + '분', Math.min(X(tt) + 8, W - 90), Y(tg) - 8); }
   }
-  if (!L.length) { x.fillStyle = '#9AA0AE'; x.font = '15px system-ui, sans-serif'; x.fillText('ESP32를 연결하거나 시뮬레이션을 시작하면 그래프가 그려져요', pad.l + 20, Hh / 2); }
+  if (!L.length) { x.fillStyle = '#4F7180'; x.font = '15px "Pretendard Variable", Pretendard, system-ui, sans-serif'; x.fillText('ESP32를 연결하거나 시뮬레이션을 시작하면 그래프가 그려져요', pad.l + 20, Hh / 2); }
 }
 window.addEventListener('resize', drawChart);
 $('target').onchange = updateLive; $('deadline').onchange = updateLive;
@@ -592,7 +603,7 @@ $('btnTrain').onclick = () => {
   $('rN').textContent = m.n.toLocaleString(); $('rNs').textContent = `학습 실험 ${train.length}개`;
   $('rFit').textContent = '±' + m.fitMaeB.toFixed(2) + '℃';
   $('rTest').textContent = ev.runsUsed + '개'; $('rTests').textContent = `${tg}℃에 닿은 시험 실험 · 비교 ${ev.points}번`;
-  const items = [['직선 추세', ev.maeLinear, '#9AA0AE'], ['뉴턴 계산식', ev.maeNewton, '#1F8FD6'], ['AI 학습 모델', ev.maeAI, '#5E68ED']];
+  const items = [['직선 추세', ev.maeLinear, '#A9C4CF'], ['뉴턴 계산식', ev.maeNewton, '#5C9DBA'], ['AI 학습 모델', ev.maeAI, '#0F2A3A']];
   const mx = Math.max(...items.map(i => isFinite(i[1]) ? i[1] : 0), 1);
   $('bars').innerHTML = items.map(([n, v, c]) => `<div class="b"><b>${n}</b><div class="track"><div class="fill" style="width:${isFinite(v) ? 100 * v / mx : 0}%;background:${c}"></div></div><span class="num">${isFinite(v) ? v.toFixed(1) + '분' : '-'}</span></div>`).join('');
   const pass = isFinite(ev.maeAI) && ev.maeAI < ev.maeNewton && ev.maeAI < ev.maeLinear;
