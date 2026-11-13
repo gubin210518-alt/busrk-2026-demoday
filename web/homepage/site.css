@@ -1,0 +1,109 @@
+/* 부스럭 예냉박스 공통 디자인
+   주인공은 25℃ → 1℃ 냉각 곡선. 나머지는 서리색 바탕 위에 조용하게.
+   색: 서리 바탕, 심해 남색 글자, 딸기 빨강은 열·시간 강조 한 곳에만.
+   초록·노랑·빨강은 실제 신호등 LED 뜻으로만 쓴다. */
+:root{
+  --frost:#EAF2F5;      /* 바탕 */
+  --ice:#CFE2EA;        /* 옅은 면, 곡선 아래 */
+  --rule:#B7CFD9;       /* 선 */
+  --deep:#0F2A3A;       /* 글자, 진한 면 */
+  --mist:#4F7180;       /* 보조 글자 */
+  --berry:#D7263D;      /* 열·시간 강조 */
+  --leaf:#1E6B4B;       /* 완료 */
+  --amber:#C98E00;      /* 식히는 중(글자용으로 조금 어둡게) */
+  --amber-dot:#E8A400;
+  --paper:#F7FBFC;      /* 표, 코드처럼 읽는 면 */
+
+  --font-display:'Hahmlet', 'Noto Serif KR', serif;
+  --font-body:'Pretendard Variable', Pretendard, system-ui, -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-code:ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* 기존 3D·배선도 스크립트가 읽는 이름 */
+  --bg:var(--frost); --surface:var(--paper); --ink:var(--deep); --muted:var(--mist); --line:var(--rule);
+  --accent:var(--deep); --accent-ink:#FFFFFF; --hot:var(--berry);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); -webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--frost); color:var(--deep);
+  font-family:var(--font-body); font-size:17px; line-height:1.7; word-break:keep-all; overflow-wrap:break-word;
+  padding-left:max(20px, env(safe-area-inset-left, 0px));
+  padding-right:max(20px, env(safe-area-inset-right, 0px));
+}
+a{color:inherit; text-decoration-thickness:1px; text-underline-offset:3px}
+a:hover{color:var(--berry)}
+:focus-visible{outline:3px solid var(--berry); outline-offset:3px; border-radius:2px}
+button{font:inherit; color:inherit}
+p{margin:0}
+.num,time{font-variant-numeric:tabular-nums}
+
+/* 머리: 왼쪽 이름, 오른쪽 쪽 이동 */
+.masthead{
+  max-width:1180px; margin:0 auto; padding:22px 0 18px;
+  display:flex; flex-wrap:wrap; gap:10px 28px; align-items:baseline; justify-content:space-between;
+  border-bottom:2px solid var(--deep);
+}
+.mark{font-family:var(--font-display); font-weight:700; font-size:22px; text-decoration:none; letter-spacing:-.01em}
+.mark:hover{color:var(--deep)}
+.masthead nav{display:flex; flex-wrap:wrap; gap:4px 22px; font-size:15.5px}
+.masthead nav a{text-decoration:none; padding:4px 0; border-bottom:2px solid transparent}
+.masthead nav a:hover{color:var(--deep); border-bottom-color:var(--rule)}
+.masthead nav a[aria-current="page"]{font-weight:700; border-bottom-color:var(--berry)}
+
+.page{max-width:1180px; margin:0 auto; padding:48px 0 72px; display:flex; flex-direction:column; gap:64px}
+.prose{max-width:720px}
+
+h1,h2,h3{font-family:var(--font-display); color:var(--deep); text-wrap:balance; margin:0}
+h1{font-size:clamp(40px,7.4vw,88px); line-height:1.08; font-weight:700; letter-spacing:-.025em}
+h2{font-size:clamp(26px,3.2vw,34px); line-height:1.25; font-weight:700; letter-spacing:-.015em}
+h3{font-size:20px; line-height:1.35; font-weight:600}
+.lead{font-size:clamp(18px,2vw,21px); line-height:1.65; max-width:40em}
+.quiet{color:var(--mist); font-size:15px}
+
+section{display:flex; flex-direction:column; gap:18px}
+section > h2{padding-top:22px; border-top:1px solid var(--rule)}
+ul,ol{margin:0; padding-left:1.25em; display:flex; flex-direction:column; gap:8px; max-width:720px}
+li::marker{color:var(--mist)}
+
+/* 버튼처럼 쓰는 링크 */
+.go{
+  display:inline-flex; align-items:center; gap:8px; align-self:flex-start;
+  background:var(--deep); color:#fff; text-decoration:none; font-weight:600;
+  padding:12px 20px; border-radius:3px; min-height:44px;
+}
+.go:hover{background:#1B3F55; color:#fff}
+.go.line{background:transparent; color:var(--deep); box-shadow:inset 0 0 0 2px var(--deep)}
+.go.line:hover{background:var(--deep); color:#fff}
+.gos{display:flex; flex-wrap:wrap; gap:10px}
+
+/* 표 */
+.tablebox{overflow-x:auto; border-top:2px solid var(--deep); border-bottom:1px solid var(--rule)}
+table{border-collapse:collapse; width:100%; min-width:540px; font-size:15.5px}
+th,td{text-align:left; padding:11px 14px 11px 0; border-bottom:1px solid var(--rule); vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:13.5px; color:var(--mist); font-weight:600}
+td.num{font-variant-numeric:tabular-nums; white-space:nowrap}
+
+/* 신호등 뜻 */
+.signals{list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:10px 34px; max-width:none}
+.signals li{display:flex; align-items:center; gap:10px}
+.signals .dot{width:16px; height:16px; border-radius:50%; flex:none}
+.dot.g{background:var(--leaf)} .dot.y{background:var(--amber-dot)} .dot.r{background:var(--berry)}
+
+.site-foot{
+  max-width:1180px; margin:0 auto; padding:22px 0 40px; border-top:2px solid var(--deep);
+  display:flex; flex-wrap:wrap; gap:6px 24px; justify-content:space-between; color:var(--mist); font-size:14.5px;
+}
+
+@media (max-width:640px){
+  body{font-size:16px}
+  .masthead{padding-top:16px}
+  .page{padding-top:32px; gap:52px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important; transition:none!important}
+}
+.note{color:var(--mist); font-size:15px; max-width:720px}
+section > p{max-width:720px}
