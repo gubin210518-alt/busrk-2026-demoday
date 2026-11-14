@@ -9,10 +9,16 @@
 <style>
 /* 예냉박스 공통 디자인(홈페이지와 같음): 흰 바탕, 검정 글자, Pretendard 하나. 식품칸 온도선이 주인공, 1시간 제한은 딸기 빨강, 목표는 초록. */
 :root{
-  --white:#FFFFFF; --snow:#F4F6F7; --hair:#E2E7EA; --ink:#111418; --gray:#5E6870;
-  --berry:#E1243B; --leaf:#1F7A50; --chill:#4A90C2;
-  --bg:var(--white); --card:var(--snow); --text:var(--ink); --muted:var(--gray); --line:var(--hair);
-  --soft:#E9EDEF; --green:var(--leaf); --yellow:#F2B200; --red:var(--berry); --cold:var(--chill);
+  /* 색마다 뜻이 하나: 딸기(식품칸)=빨강, 냉기=파랑, AI=보라, 목표·완료=초록, 시간=노랑 */
+  --white:#FFFFFF; --snow:#F3F7FB; --hair:#DCE5EE; --ink:#11202E; --gray:#566676;
+  --berry:#E1243B; --berry-soft:#FFE6EA;
+  --chill:#2F7FC1; --chill-soft:#E1EFFA;
+  --ai:#6A4BD8; --ai-soft:#EEEAFE;
+  --leaf:#1F8A57; --leaf-soft:#DFF4E8;
+  --amber:#C98A00; --amber-soft:#FFF3CF;
+  --night:#0E2440; --night2:#1C4C7E;
+  --bg:var(--snow); --card:var(--snow); --text:var(--ink); --muted:var(--gray); --line:var(--hair);
+  --soft:#E6EDF4; --green:var(--leaf); --yellow:#F2B200; --red:var(--berry); --cold:var(--chill);
   --deep:var(--ink);
 }
 *{box-sizing:border-box}
@@ -20,23 +26,29 @@ html,body{margin:0;background:var(--bg);color:var(--text);
   font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;font-size:15.5px;line-height:1.6;word-break:keep-all;-webkit-font-smoothing:antialiased}
 button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:3px solid #2B78C5;outline-offset:2px}
-.top{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.86);backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);border-bottom:1px solid var(--hair);color:var(--ink);padding:12px 28px;display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap}
+.top{position:sticky;top:0;z-index:5;background:linear-gradient(100deg,var(--night) 0%,var(--night2) 100%);color:#fff;padding:14px 28px;display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;box-shadow:0 1px 0 rgba(255,255,255,.08) inset}
 .brand{font-weight:800;font-size:20px;letter-spacing:-.03em;line-height:1.25}
-.brand small{display:block;font-weight:500;font-size:13px;color:var(--gray);letter-spacing:0;margin-top:1px}
+.brand small{display:block;font-weight:500;font-size:13px;color:#A9C4DE;letter-spacing:0;margin-top:1px}
+.brand b{color:#FF7A8A;font-weight:800}
 .top .sp{flex:1}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 6px;font-size:14px;color:var(--gray)}
-.dot{width:10px;height:10px;border-radius:50%;background:#B4BEC4}
-.dot.on{background:#2DBE7A}
-.dot.sim{background:#F2B200}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;font-size:14px;color:#DCE8F3;background:rgba(255,255,255,.1);border-radius:999px}
+.dot{width:10px;height:10px;border-radius:50%;background:#7F93A6}
+.dot.on{background:#45E08F;box-shadow:0 0 8px #45E08F}
+.dot.sim{background:#FFC23D;box-shadow:0 0 8px #FFC23D}
 .btn{border:1px solid var(--hair);border-radius:999px;padding:8px 16px;min-height:40px;cursor:pointer;font-weight:600;background:#fff;color:var(--ink)}
 .btn:hover{border-color:var(--ink)}
-.btn.pri{background:var(--ink);border-color:var(--ink);color:#fff}
-.btn.pri:hover{background:#2C3238}
+.btn.pri{background:var(--ai);border-color:var(--ai);color:#fff}
+.btn.pri:hover{background:#5638C4}
+.top .btn{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.28);color:#fff}
+.top .btn:hover{background:rgba(255,255,255,.2);border-color:#fff}
+.top .btn.pri{background:#fff;border-color:#fff;color:var(--night)}
+.top .btn.pri:hover{background:#DCEBFA}
 .btn:disabled{opacity:.4;cursor:not-allowed}
-.tabs{display:flex;gap:4px 28px;padding:18px 28px 0;flex-wrap:wrap;border-bottom:1px solid var(--hair);max-width:1400px;margin:0 auto}
-.tab{border:0;background:none;padding:10px 0 9px;cursor:pointer;color:var(--gray);font-weight:700;font-size:17px;letter-spacing:-.02em;border-bottom:2px solid transparent;margin-bottom:-1px;min-height:44px}
-.tab:hover{color:var(--ink)}
-.tab.on{color:var(--ink);border-bottom-color:var(--ink)}
+.tabbar{background:#fff;border-bottom:1px solid var(--hair)}
+.tabs{display:flex;gap:4px 8px;padding:10px 28px;flex-wrap:wrap;max-width:1400px;margin:0 auto}
+.tab{border:0;background:none;padding:8px 16px;cursor:pointer;color:var(--gray);font-weight:700;font-size:16px;letter-spacing:-.02em;border-radius:999px;min-height:42px}
+.tab:hover{color:var(--ink);background:var(--soft)}
+.tab.on{color:#fff;background:var(--night2)}
 main{padding:26px 28px 48px;max-width:1400px;margin:0 auto}
 .panel{display:none}
 .panel.on{display:block}
@@ -44,7 +56,15 @@ main{padding:26px 28px 48px;max-width:1400px;margin:0 auto}
 .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
-.tile{background:var(--snow);border-radius:18px;padding:16px 18px;min-width:0}
+.tile{background:#fff;border-radius:18px;padding:16px 18px;min-width:0;border:1px solid var(--hair);position:relative;overflow:hidden}
+.tile.berry{background:var(--berry-soft);border-color:#FFC9D1}.tile.berry .v{color:var(--berry)}
+.tile.chill{background:var(--chill-soft);border-color:#BFDDF4}.tile.chill .v{color:var(--chill)}
+.tile.amber{background:var(--amber-soft);border-color:#F6DE94}.tile.amber .v{color:#8A5E00}
+.tile.ai{background:var(--ai-soft);border-color:#D6CCFB}.tile.ai .v{color:var(--ai)}
+.tile.st-g{background:var(--leaf-soft);border-color:#B5E3C8}.tile.st-g #vL{color:var(--leaf)}
+.tile.st-y{background:var(--amber-soft);border-color:#F6DE94}.tile.st-y #vL{color:#8A5E00}
+.tile.st-r{background:var(--berry-soft);border-color:#FFC9D1}.tile.st-r #vL{color:var(--berry)}
+.tile{transition:background .4s,border-color .4s}
 .tile .k{font-size:14px;color:var(--gray);font-weight:600}
 .tile .v{font-size:40px;font-weight:800;color:var(--ink);margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.035em;line-height:1.15}
 .tile .s{font-size:13.5px;color:var(--gray);margin-top:2px}
@@ -60,28 +80,32 @@ main{padding:26px 28px 48px;max-width:1400px;margin:0 auto}
 .row label{font-size:14px;color:var(--gray);display:flex;align-items:center;gap:6px}
 input[type=number],select{width:84px;padding:7px 10px;min-height:40px;border:1px solid var(--hair);border-radius:10px;background:#fff;color:var(--ink);font-variant-numeric:tabular-nums}
 h3{margin:0 0 12px;color:var(--ink);font-size:19px;font-weight:700;letter-spacing:-.02em}
-.card{background:#fff;border:1px solid var(--hair);border-radius:20px;padding:20px;min-width:0}
+.card{background:#fff;border:1px solid var(--hair);border-radius:20px;padding:20px;min-width:0;box-shadow:0 1px 2px rgba(14,36,64,.04)}
 canvas{width:100%;display:block}
 .eta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .eta .tile .v{font-size:32px}
 .badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12.5px;font-weight:700;background:var(--soft);color:var(--ink)}
 .badge.warn,.badge.sim{background:#FFF1C9;color:#6E4E00}
-.badge.real{background:#DDF2E7;color:var(--leaf)}
+.badge.real{background:var(--leaf-soft);color:var(--leaf)}
 table{width:100%;border-collapse:collapse;font-size:14.5px}
 th,td{padding:10px 10px 10px 0;border-bottom:1px solid var(--hair);text-align:left;white-space:nowrap}
 th{color:var(--gray);font-weight:600;font-size:13px}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 th.ctr,td.ctr{text-align:center}
-.tablewrap{overflow-x:auto;border-top:1px solid var(--ink)}
+.tablewrap{overflow-x:auto;border-top:2px solid var(--night2);background:#fff;border-radius:0 0 14px 14px}
 .note{font-size:14px;color:var(--gray);line-height:1.6}
 .callout{background:#FFF6DB;color:#5C4300;border-radius:14px;padding:12px 16px;font-size:14px;line-height:1.6}
-.callout.ok{background:#E3F4EA;color:#174E36}
+.callout.ok{background:var(--leaf-soft);color:#174E36}
 .bars .b{display:grid;grid-template-columns:130px 1fr 90px;gap:10px;align-items:center;margin:8px 0}
-.bars .track{height:22px;background:var(--snow);border-radius:999px;overflow:hidden}
+.bars .track{height:22px;background:var(--soft);border-radius:999px;overflow:hidden}
 .bars .fill{height:100%;border-radius:999px}
 pre{background:#0E1114;color:#E3E8EB;padding:16px;border-radius:14px;overflow:auto;font-size:12.5px;line-height:1.55;max-height:360px;word-break:normal}
 .console{height:120px;overflow:auto;background:#0E1114;color:#C9D1D6;font:12.5px/1.5 ui-monospace,Consolas,monospace;padding:10px 12px;border-radius:12px;margin-top:8px;word-break:normal}
 .steps{margin:0;padding-left:20px;line-height:1.9}
+.card h3{display:flex;align-items:center;gap:8px}
+.card h3:before{content:"";width:6px;height:18px;border-radius:3px;background:var(--hc,var(--night2));flex:none}
+.card.c-ai{--hc:var(--ai)}.card.c-chill{--hc:var(--chill)}.card.c-berry{--hc:var(--berry)}.card.c-leaf{--hc:var(--leaf)}.card.c-amber{--hc:var(--yellow)}
+main a{color:var(--chill)}
 .hide{display:none!important}
 .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;color:var(--gray);margin-top:10px}
 .legend span{display:inline-flex;align-items:center;gap:6px}
@@ -92,7 +116,7 @@ pre{background:#0E1114;color:#E3E8EB;padding:16px;border-radius:14px;overflow:au
 </head>
 <body>
 <header class="top">
-  <div class="brand">예냉박스 AI 시뮬레이터<small>식품칸 온도를 실시간으로 보고, 1℃까지 남은 시간을 예측하는 AI를 학습시켜요</small></div>
+  <div class="brand"><b>예냉박스</b> AI 시뮬레이터<small>식품칸 온도를 실시간으로 보고, 1℃까지 남은 시간을 예측하는 AI를 학습시켜요</small></div>
   <div class="sp"></div>
   <a class="btn" href="https://busrk-box3d.vercel.app/about.html" style="text-decoration:none;display:inline-flex;align-items:center">홈페이지</a>
   <span class="pill"><span class="dot" id="connDot"></span><span id="connText">연결 안 됨</span></span>
@@ -101,46 +125,46 @@ pre{background:#0E1114;color:#E3E8EB;padding:16px;border-radius:14px;overflow:au
   <button class="btn" id="btnReset" title="새 딸기를 넣었을 때 시간을 0분부터 다시 셉니다">새 딸기 시작</button>
 </header>
 
-<nav class="tabs">
+<div class="tabbar"><nav class="tabs">
   <button class="tab on" data-tab="live">실시간</button>
   <button class="tab" data-tab="data">실험 기록</button>
   <button class="tab" data-tab="train">AI 학습</button>
   <button class="tab" data-tab="export">펌웨어로 보내기</button>
   <button class="tab" data-tab="help">사용법</button>
-</nav>
+</nav></div>
 
 <main>
 <!-- 실시간 -->
 <section class="panel on" id="tab-live">
   <div class="grid g4">
-    <div class="tile"><div class="k">식품칸 온도</div><div class="v" id="vB">--.-℃</div><div class="s" id="vBs">목표 1℃</div></div>
-    <div class="tile"><div class="k">냉기실 온도</div><div class="v" id="vC">--.-℃</div><div class="s" id="vCs">팬 -- · 뚜껑 --</div></div>
-    <div class="tile"><div class="k">수확 후 경과</div><div class="v" id="vT">0:00</div><div class="s" id="vTs">제한 60분</div></div>
-    <div class="tile status"><div class="lights"><i class="r" id="lR"></i><i class="y" id="lY"></i><i class="g" id="lG"></i></div>
+    <div class="tile berry"><div class="k">식품칸 온도</div><div class="v" id="vB">--.-℃</div><div class="s" id="vBs">목표 1℃</div></div>
+    <div class="tile chill"><div class="k">냉기실 온도</div><div class="v" id="vC">--.-℃</div><div class="s" id="vCs">팬 -- · 뚜껑 --</div></div>
+    <div class="tile amber"><div class="k">수확 후 경과</div><div class="v" id="vT">0:00</div><div class="s" id="vTs">제한 60분</div></div>
+    <div class="tile status" id="stTile"><div class="lights"><i class="r" id="lR"></i><i class="y" id="lY"></i><i class="g" id="lG"></i></div>
       <div><div class="k">박스 판단</div><div class="v" style="font-size:24px" id="vL">대기</div><div class="s" id="vLs">연결하거나 시뮬레이션을 시작하세요</div></div></div>
   </div>
 
   <div class="grid" style="grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);margin-top:14px" id="liveGrid">
-    <div class="card">
+    <div class="card c-berry">
       <div class="row" style="justify-content:space-between"><h3 style="margin:0">온도 그래프와 AI 예측</h3>
         <div class="row"><label>목표 <input type="number" id="target" value="1" step="0.5">℃</label>
         <label>제한 <input type="number" id="deadline" value="60" step="5">분</label></div></div>
       <canvas id="chart" height="340"></canvas>
-      <div class="legend"><span><i style="background:var(--deep);height:4px"></i>식품칸</span><span><i style="background:var(--chill)"></i>냉기실</span>
-        <span><i style="background:none;height:0;border-top:3px dashed var(--deep)"></i>AI 예측 경로</span>
+      <div class="legend"><span><i style="background:var(--berry);height:4px"></i>식품칸</span><span><i style="background:var(--chill)"></i>냉기실</span>
+        <span><i style="background:none;height:0;border-top:3px dashed var(--ai)"></i>AI 예측 경로</span>
         <span><i style="background:none;height:0;border-top:2px dashed var(--leaf)"></i>목표 온도</span>
         <span><i style="background:none;width:0;height:14px;border-left:2px dashed var(--berry)"></i>제한 시간</span></div>
     </div>
     <div class="grid" style="align-content:start">
-      <div class="card">
+      <div class="card c-ai">
         <h3>목표까지 남은 시간 예측</h3>
         <div class="eta">
-          <div class="tile"><div class="k">AI 학습 모델</div><div class="v" id="eA">--</div><div class="s" id="eAs">2분 기록 후 계산</div></div>
-          <div class="tile"><div class="k">뉴턴 계산식</div><div class="v" id="eN">--</div><div class="s" id="eNs">2분 기록 후 계산</div></div>
+          <div class="tile ai"><div class="k">AI 학습 모델</div><div class="v" id="eA">--</div><div class="s" id="eAs">2분 기록 후 계산</div></div>
+          <div class="tile chill"><div class="k">뉴턴 계산식</div><div class="v" id="eN">--</div><div class="s" id="eNs">2분 기록 후 계산</div></div>
         </div>
         <p class="note" id="etaNote" style="margin:10px 0 0">예측은 PC 프로그램 안의 현재 모델로 계산합니다.</p>
       </div>
-      <div class="card" id="simCard">
+      <div class="card c-amber" id="simCard">
         <h3>시뮬레이션 설정</h3>
         <div class="row"><label>배속 <select id="simSpeed"><option value="30">30배</option><option value="60" selected>60배</option><option value="120">120배</option><option value="300">300배</option></select></label>
           <button class="btn" id="btnLid">뚜껑 열기</button></div>
@@ -175,7 +199,7 @@ pre{background:#0E1114;color:#E3E8EB;padding:16px;border-radius:14px;overflow:au
 <!-- AI 학습 -->
 <section class="panel" id="tab-train">
   <div class="grid g2">
-    <div class="card">
+    <div class="card c-ai">
       <h3>학습 설정</h3>
       <div class="row">
         <label>평가 목표 온도 <input type="number" id="evalTarget" value="1" step="0.5">℃</label>
@@ -185,7 +209,7 @@ pre{background:#0E1114;color:#E3E8EB;padding:16px;border-radius:14px;overflow:au
       <p class="note">λ(릿지 규제): 가중치가 지나치게 커지지 않게 눌러 주는 값이에요. 기록이 적을수록 조금 키우면(예: 5) 안정적이고, 0이면 일반 선형 회귀예요. 보통 1 그대로 두면 됩니다.<br>체크한 실험 중 5개마다 1개는 시험용으로 빼 두고, 나머지로 학습합니다. 시험용 실험에서 목표에 실제로 닿은 시각과 예측을 비교합니다.</p>
       <div id="trainMsg"></div>
     </div>
-    <div class="card">
+    <div class="card c-ai">
       <h3>이 AI는 무엇을 배우나</h3>
       <p class="note" style="margin:0">입력 4가지: 식품칸−냉기실 온도 차, 냉기실 온도, 식품칸이 최근 2분 동안 식은 속도, 냉기실이 최근 2분 동안 변한 속도.<br>
       출력 2가지: 2분 뒤 식품칸 온도 변화, 2분 뒤 냉기실 온도 변화 (선형 회귀, 릿지 규제).<br>
@@ -194,13 +218,13 @@ pre{background:#0E1114;color:#E3E8EB;padding:16px;border-radius:14px;overflow:au
   </div>
   <div id="trainResult" class="hide" style="margin-top:14px">
     <div class="grid g4">
-      <div class="tile"><div class="k">학습 표본</div><div class="v" id="rN">-</div><div class="s" id="rNs"></div></div>
+      <div class="tile ai"><div class="k">학습 표본</div><div class="v" id="rN">-</div><div class="s" id="rNs"></div></div>
       <div class="tile"><div class="k">2분 뒤 온도 오차</div><div class="v" id="rFit">-</div><div class="s">식품칸, 학습 데이터 기준</div></div>
       <div class="tile"><div class="k">시험 실험</div><div class="v" id="rTest">-</div><div class="s" id="rTests"></div></div>
       <div class="tile"><div class="k">판정 (성공 기준 4)</div><div class="v" id="rPass" style="font-size:24px">-</div><div class="s">AI 오차 &lt; 직선, 뉴턴</div></div>
     </div>
     <div class="grid g2" style="margin-top:14px">
-      <div class="card"><h3>남은 시간 예측 오차 (평균, 분)</h3><div class="bars" id="bars"></div>
+      <div class="card c-ai"><h3>남은 시간 예측 오차 (평균, 분)</h3><div class="bars" id="bars"></div>
         <p class="note" id="evalNote"></p></div>
       <div class="card"><h3>학습된 가중치</h3><div class="tablewrap"><table id="wTable"></table></div>
         <p class="note">표준화한 입력 기준 가중치예요. 절댓값이 클수록 그 입력이 예측에 크게 작용합니다.</p></div>
@@ -349,7 +373,7 @@ function updateLive(){
     const lv = (S.mode === 'serial' && last.lvl !== undefined) ? last.lvl : last.lvlPc;
     const info = LV[lv] || LV[0];
     $('vL').textContent = info.name; $('vLs').textContent = info.sub + (S.mode === 'serial' ? ' (ESP32 판단)' : '');
-    ['r','y','g'].forEach(c => $('l' + c.toUpperCase()).classList.toggle('on', info.l === c));
+    ['r','y','g'].forEach(c => { $('l' + c.toUpperCase()).classList.toggle('on', info.l === c); $('stTile').classList.toggle('st-' + c, info.l === c); });
   }
   // 예측 표시
   const fwOn = S.mode === 'serial' && last && last.eA !== undefined;
@@ -376,28 +400,32 @@ function drawChart(){
   for (const r of L) { if (isFinite(r.b)) { lo = Math.min(lo, r.b); hi = Math.max(hi, r.b); } if (isFinite(r.c)) { lo = Math.min(lo, r.c); hi = Math.max(hi, r.c); } }
   lo = Math.floor(lo - 1); hi = Math.ceil(hi + 1);
   const X = t => pad.l + (W - pad.l - pad.r) * t / tMax, Y = v => pad.t + (Hh - pad.t - pad.b) * (hi - v) / (hi - lo);
-  x.font = '12px "Pretendard Variable", Pretendard, system-ui, sans-serif'; x.fillStyle = '#5E6870'; x.strokeStyle = '#EDF1F3'; x.lineWidth = 1;
+  x.font = '12px "Pretendard Variable", Pretendard, system-ui, sans-serif'; x.fillStyle = '#566676'; x.strokeStyle = '#E8EEF4'; x.lineWidth = 1;
   const ys = Math.max(1, Math.ceil((hi - lo) / 7));
   for (let v = Math.ceil(lo); v <= hi; v += ys) { x.beginPath(); x.moveTo(pad.l, Y(v)); x.lineTo(W - pad.r, Y(v)); x.stroke(); x.fillText(v + '℃', 4, Y(v) + 4); }
   const ts = tMax > 150 ? 30 : tMax > 60 ? 15 : 10;
   for (let t = 0; t <= tMax; t += ts) { x.fillText(t + '분', X(t) - 10, Hh - 8); }
   const dash = (v, col, vert) => { x.save(); x.setLineDash([6,5]); x.strokeStyle = col; x.lineWidth = 1.6; x.beginPath();
     if (vert) { x.moveTo(X(v), pad.t); x.lineTo(X(v), Hh - pad.b); } else { x.moveTo(pad.l, Y(v)); x.lineTo(W - pad.r, Y(v)); } x.stroke(); x.restore(); };
-  dash(tg, '#1F7A50'); dash(dl, '#E1243B', true);
+  // 목표 아래 구역을 옅은 초록으로
+  { const yT = Math.max(pad.t, Math.min(Hh - pad.b, Y(tg))); x.fillStyle = 'rgba(31,138,87,.07)'; x.fillRect(pad.l, yT, W - pad.l - pad.r, Hh - pad.b - yT); }
+  dash(tg, '#1F8A57'); dash(dl, '#E1243B', true);
   const line = (key, col) => { x.strokeStyle = col; x.lineWidth = 2.6; x.beginPath(); let on = false;
     for (const r of L) { if (!isFinite(r[key])) { on = false; continue; } on ? x.lineTo(X(r.t), Y(r[key])) : x.moveTo(X(r.t), Y(r[key])); on = true; } x.stroke(); };
   // 뚜껑 열림 구간
   x.fillStyle = 'rgba(17,20,24,.05)';
   for (let i = 1; i < L.length; i++) if (L[i].lid) x.fillRect(X(L[i-1].t), pad.t, X(L[i].t) - X(L[i-1].t) + .5, Hh - pad.t - pad.b);
-  line('c', '#4A90C2'); line('b', '#111418');
+  // 식품칸 선 아래를 딸기색으로 옅게 채움
+  { const pts = L.filter(r => isFinite(r.b)); if (pts.length > 1) { const g = x.createLinearGradient(0, pad.t, 0, Hh - pad.b); g.addColorStop(0, 'rgba(225,36,59,.20)'); g.addColorStop(1, 'rgba(225,36,59,0)'); x.fillStyle = g; x.beginPath(); x.moveTo(X(pts[0].t), Hh - pad.b); pts.forEach(r => x.lineTo(X(r.t), Y(r.b))); x.lineTo(X(pts[pts.length-1].t), Hh - pad.b); x.closePath(); x.fill(); } }
+  line('c', '#2F7FC1'); line('b', '#E1243B');
   if (path && path.length > 1) {
     x.save(); x.setLineDash([7,5]); x.lineWidth = 2.4;
-    x.strokeStyle = '#111418'; x.beginPath(); path.forEach((p,i) => { const xx = X(pr.t + p[0]), yy = Y(p[1]); i ? x.lineTo(xx,yy) : x.moveTo(xx,yy); }); x.stroke();
-    x.strokeStyle = 'rgba(74,144,194,.6)'; x.beginPath(); path.forEach((p,i) => { const xx = X(pr.t + p[0]), yy = Y(p[2]); i ? x.lineTo(xx,yy) : x.moveTo(xx,yy); }); x.stroke();
+    x.strokeStyle = '#6A4BD8'; x.beginPath(); path.forEach((p,i) => { const xx = X(pr.t + p[0]), yy = Y(p[1]); i ? x.lineTo(xx,yy) : x.moveTo(xx,yy); }); x.stroke();
+    x.strokeStyle = 'rgba(47,127,193,.55)'; x.beginPath(); path.forEach((p,i) => { const xx = X(pr.t + p[0]), yy = Y(p[2]); i ? x.lineTo(xx,yy) : x.moveTo(xx,yy); }); x.stroke();
     x.restore();
-    if (pr.eA >= 0) { const tt = pr.t + pr.eA; x.fillStyle = '#111418'; x.beginPath(); x.arc(X(tt), Y(tg), 5, 0, 7); x.fill(); x.fillText('AI 예상 ' + Math.round(tt) + '분', Math.min(X(tt) + 8, W - 90), Y(tg) - 8); }
+    if (pr.eA >= 0) { const tt = pr.t + pr.eA; x.fillStyle = '#6A4BD8'; x.beginPath(); x.arc(X(tt), Y(tg), 6, 0, 7); x.fill(); x.fillText('AI 예상 ' + Math.round(tt) + '분', Math.min(X(tt) + 8, W - 90), Y(tg) - 8); }
   }
-  if (!L.length) { x.fillStyle = '#5E6870'; x.font = '15px "Pretendard Variable", Pretendard, system-ui, sans-serif'; x.fillText('ESP32를 연결하거나 시뮬레이션을 시작하면 그래프가 그려져요', pad.l + 20, Hh / 2); }
+  if (!L.length) { x.fillStyle = '#566676'; x.font = '15px "Pretendard Variable", Pretendard, system-ui, sans-serif'; x.fillText('ESP32를 연결하거나 시뮬레이션을 시작하면 그래프가 그려져요', pad.l + 20, Hh / 2); }
 }
 window.addEventListener('resize', drawChart);
 $('target').onchange = updateLive; $('deadline').onchange = updateLive;
@@ -597,7 +625,7 @@ $('btnTrain').onclick = () => {
   $('rN').textContent = m.n.toLocaleString(); $('rNs').textContent = `학습 실험 ${train.length}개`;
   $('rFit').textContent = '±' + m.fitMaeB.toFixed(2) + '℃';
   $('rTest').textContent = ev.runsUsed + '개'; $('rTests').textContent = `${tg}℃에 닿은 시험 실험 · 비교 ${ev.points}번`;
-  const items = [['직선 추세', ev.maeLinear, '#C3CCD1'], ['뉴턴 계산식', ev.maeNewton, '#4A90C2'], ['AI 학습 모델', ev.maeAI, '#111418']];
+  const items = [['직선 추세', ev.maeLinear, '#B7C4D0'], ['뉴턴 계산식', ev.maeNewton, '#2F7FC1'], ['AI 학습 모델', ev.maeAI, '#6A4BD8']];
   const mx = Math.max(...items.map(i => isFinite(i[1]) ? i[1] : 0), 1);
   $('bars').innerHTML = items.map(([n, v, c]) => `<div class="b"><b>${n}</b><div class="track"><div class="fill" style="width:${isFinite(v) ? 100 * v / mx : 0}%;background:${c}"></div></div><span class="num">${isFinite(v) ? v.toFixed(1) + '분' : '-'}</span></div>`).join('');
   const pass = isFinite(ev.maeAI) && ev.maeAI < ev.maeNewton && ev.maeAI < ev.maeLinear;
