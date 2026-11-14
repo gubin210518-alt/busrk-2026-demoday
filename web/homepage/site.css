@@ -1,109 +1,109 @@
-/* 부스럭 예냉박스 공통 디자인
-   주인공은 25℃ → 1℃ 냉각 곡선. 나머지는 서리색 바탕 위에 조용하게.
-   색: 서리 바탕, 심해 남색 글자, 딸기 빨강은 열·시간 강조 한 곳에만.
-   초록·노랑·빨강은 실제 신호등 LED 뜻으로만 쓴다. */
+/* 부스럭 예냉박스 공통 디자인: 제품 소개 페이지 스타일
+   흰 바탕, 검정 글자, 사진과 3D 모형이 주인공. 글꼴은 Pretendard 하나로 굵기와 크기만 바꾼다.
+   딸기 빨강은 "1시간"과 열을 가리킬 때만, 초록·노랑·빨강은 신호등 LED 뜻으로만 쓴다. */
 :root{
-  --frost:#EAF2F5;      /* 바탕 */
-  --ice:#CFE2EA;        /* 옅은 면, 곡선 아래 */
-  --rule:#B7CFD9;       /* 선 */
-  --deep:#0F2A3A;       /* 글자, 진한 면 */
-  --mist:#4F7180;       /* 보조 글자 */
-  --berry:#D7263D;      /* 열·시간 강조 */
-  --leaf:#1E6B4B;       /* 완료 */
-  --amber:#C98E00;      /* 식히는 중(글자용으로 조금 어둡게) */
-  --amber-dot:#E8A400;
-  --paper:#F7FBFC;      /* 표, 코드처럼 읽는 면 */
+  --white:#FFFFFF;
+  --snow:#F4F6F7;       /* 번갈아 쓰는 면 */
+  --hair:#E2E7EA;       /* 얇은 선 */
+  --ink:#111418;        /* 글자 */
+  --gray:#5E6870;       /* 보조 글자 */
+  --berry:#E1243B;      /* 1시간, 열 */
+  --leaf:#1F7A50;       /* 완료, 목표 */
+  --amber-dot:#F2B200;
+  --chill:#4A90C2;      /* 냉기실 */
 
-  --font-display:'Hahmlet', 'Noto Serif KR', serif;
-  --font-body:'Pretendard Variable', Pretendard, system-ui, -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-display:'Pretendard Variable', Pretendard, system-ui, -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --font-body:var(--font-display);
   --font-code:ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
-  /* 기존 3D·배선도 스크립트가 읽는 이름 */
-  --bg:var(--frost); --surface:var(--paper); --ink:var(--deep); --muted:var(--mist); --line:var(--rule);
-  --accent:var(--deep); --accent-ink:#FFFFFF; --hot:var(--berry);
+  /* 예전 이름(부착도 화면 스크립트와 style.css가 읽음) */
+  --frost:var(--white); --ice:#EAF1F4; --rule:var(--hair); --deep:var(--ink); --mist:var(--gray); --paper:var(--snow);
+  --bg:var(--white); --surface:var(--snow); --line:var(--hair); --muted:var(--gray);
+  --accent:var(--ink); --accent-ink:#FFFFFF; --hot:var(--berry);
   color-scheme:light;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html{padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); -webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%; scroll-padding-top:64px}
 body{
-  margin:0; background:var(--frost); color:var(--deep);
-  font-family:var(--font-body); font-size:17px; line-height:1.7; word-break:keep-all; overflow-wrap:break-word;
-  padding-left:max(20px, env(safe-area-inset-left, 0px));
-  padding-right:max(20px, env(safe-area-inset-right, 0px));
+  margin:0; background:var(--white); color:var(--ink);
+  font-family:var(--font-body); font-size:17px; line-height:1.65; letter-spacing:-.005em;
+  word-break:keep-all; overflow-wrap:break-word;
+  -webkit-font-smoothing:antialiased;
 }
-a{color:inherit; text-decoration-thickness:1px; text-underline-offset:3px}
-a:hover{color:var(--berry)}
-:focus-visible{outline:3px solid var(--berry); outline-offset:3px; border-radius:2px}
+a{color:inherit; text-underline-offset:3px; text-decoration-thickness:1px}
+a:hover{color:var(--gray)}
+:focus-visible{outline:3px solid #2B78C5; outline-offset:3px; border-radius:4px}
 button{font:inherit; color:inherit}
 p{margin:0}
-.num,time{font-variant-numeric:tabular-nums}
+img{max-width:100%; display:block}
 
-/* 머리: 왼쪽 이름, 오른쪽 쪽 이동 */
+/* 위쪽 고정 바: 작고 반투명 */
 .masthead{
-  max-width:1180px; margin:0 auto; padding:22px 0 18px;
-  display:flex; flex-wrap:wrap; gap:10px 28px; align-items:baseline; justify-content:space-between;
-  border-bottom:2px solid var(--deep);
+  position:sticky; top:0; z-index:20;
+  background:rgba(255,255,255,.82); backdrop-filter:saturate(1.6) blur(14px); -webkit-backdrop-filter:saturate(1.6) blur(14px);
+  border-bottom:1px solid var(--hair);
+  padding:0 max(22px, env(safe-area-inset-left,0px));
 }
-.mark{font-family:var(--font-display); font-weight:700; font-size:22px; text-decoration:none; letter-spacing:-.01em}
-.mark:hover{color:var(--deep)}
-.masthead nav{display:flex; flex-wrap:wrap; gap:4px 22px; font-size:15.5px}
-.masthead nav a{text-decoration:none; padding:4px 0; border-bottom:2px solid transparent}
-.masthead nav a:hover{color:var(--deep); border-bottom-color:var(--rule)}
-.masthead nav a[aria-current="page"]{font-weight:700; border-bottom-color:var(--berry)}
+.masthead .in{max-width:1120px; margin:0 auto; min-height:56px; display:flex; align-items:center; justify-content:space-between; gap:8px 24px; flex-wrap:wrap}
+.mark{font-weight:800; font-size:18px; text-decoration:none; letter-spacing:-.02em}
+.mark:hover{color:var(--ink)}
+.masthead nav{display:flex; flex-wrap:wrap; gap:2px 22px; font-size:14.5px}
+.masthead nav a{text-decoration:none; color:var(--gray); padding:8px 0}
+.masthead nav a:hover{color:var(--ink)}
+.masthead nav a[aria-current="page"]{color:var(--ink); font-weight:700}
 
-.page{max-width:1180px; margin:0 auto; padding:48px 0 72px; display:flex; flex-direction:column; gap:64px}
-.prose{max-width:720px}
+.page{max-width:1120px; margin:0 auto; padding:56px 22px 80px; display:flex; flex-direction:column; gap:56px}
+.prose{max-width:680px}
 
-h1,h2,h3{font-family:var(--font-display); color:var(--deep); text-wrap:balance; margin:0}
-h1{font-size:clamp(40px,7.4vw,88px); line-height:1.08; font-weight:700; letter-spacing:-.025em}
-h2{font-size:clamp(26px,3.2vw,34px); line-height:1.25; font-weight:700; letter-spacing:-.015em}
-h3{font-size:20px; line-height:1.35; font-weight:600}
-.lead{font-size:clamp(18px,2vw,21px); line-height:1.65; max-width:40em}
-.quiet{color:var(--mist); font-size:15px}
+h1,h2,h3{font-family:var(--font-display); color:var(--ink); text-wrap:balance; margin:0; letter-spacing:-.035em}
+h1{font-size:clamp(44px,8vw,96px); line-height:1.04; font-weight:800}
+h2{font-size:clamp(30px,4.6vw,52px); line-height:1.12; font-weight:800}
+h3{font-size:21px; line-height:1.35; font-weight:700; letter-spacing:-.02em}
+.lead{font-size:clamp(19px,2.2vw,24px); line-height:1.5; color:var(--gray); font-weight:500; max-width:34em}
+.quiet{color:var(--gray); font-size:15px}
+.note{color:var(--gray); font-size:15px; max-width:680px}
 
 section{display:flex; flex-direction:column; gap:18px}
-section > h2{padding-top:22px; border-top:1px solid var(--rule)}
-ul,ol{margin:0; padding-left:1.25em; display:flex; flex-direction:column; gap:8px; max-width:720px}
-li::marker{color:var(--mist)}
+section > p{max-width:680px}
+ul,ol{margin:0; padding-left:1.2em; display:flex; flex-direction:column; gap:8px; max-width:680px}
+li::marker{color:#9AA4AB}
 
-/* 버튼처럼 쓰는 링크 */
+/* 버튼: 검정 알약, 보조는 글자 링크 */
 .go{
-  display:inline-flex; align-items:center; gap:8px; align-self:flex-start;
-  background:var(--deep); color:#fff; text-decoration:none; font-weight:600;
-  padding:12px 20px; border-radius:3px; min-height:44px;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; align-self:flex-start;
+  background:var(--ink); color:#fff; text-decoration:none; font-weight:600; font-size:16px;
+  padding:12px 24px; border-radius:999px; min-height:46px;
 }
-.go:hover{background:#1B3F55; color:#fff}
-.go.line{background:transparent; color:var(--deep); box-shadow:inset 0 0 0 2px var(--deep)}
-.go.line:hover{background:var(--deep); color:#fff}
-.gos{display:flex; flex-wrap:wrap; gap:10px}
+.go:hover{background:#2C3238; color:#fff}
+.go.line{background:transparent; color:var(--ink); box-shadow:inset 0 0 0 1.5px var(--ink)}
+.go.line:hover{background:var(--ink); color:#fff}
+.gos{display:flex; flex-wrap:wrap; gap:12px; align-items:center}
 
-/* 표 */
-.tablebox{overflow-x:auto; border-top:2px solid var(--deep); border-bottom:1px solid var(--rule)}
+/* 표: 제품 사양표처럼 */
+.tablebox{overflow-x:auto; border-top:1px solid var(--ink)}
 table{border-collapse:collapse; width:100%; min-width:540px; font-size:15.5px}
-th,td{text-align:left; padding:11px 14px 11px 0; border-bottom:1px solid var(--rule); vertical-align:top}
-tr:last-child td{border-bottom:0}
-th{font-size:13.5px; color:var(--mist); font-weight:600}
+th,td{text-align:left; padding:14px 18px 14px 0; border-bottom:1px solid var(--hair); vertical-align:top}
+th{font-size:13.5px; color:var(--gray); font-weight:600}
 td.num{font-variant-numeric:tabular-nums; white-space:nowrap}
 
 /* 신호등 뜻 */
-.signals{list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:10px 34px; max-width:none}
+.signals{list-style:none; padding:0; display:flex; flex-direction:row; flex-wrap:wrap; gap:10px 30px; max-width:none}
 .signals li{display:flex; align-items:center; gap:10px}
-.signals .dot{width:16px; height:16px; border-radius:50%; flex:none}
+.signals .dot{width:14px; height:14px; border-radius:50%; flex:none}
 .dot.g{background:var(--leaf)} .dot.y{background:var(--amber-dot)} .dot.r{background:var(--berry)}
 
 .site-foot{
-  max-width:1180px; margin:0 auto; padding:22px 0 40px; border-top:2px solid var(--deep);
-  display:flex; flex-wrap:wrap; gap:6px 24px; justify-content:space-between; color:var(--mist); font-size:14.5px;
+  background:var(--snow); border-top:1px solid var(--hair); color:var(--gray); font-size:14px;
+  padding:26px max(22px, env(safe-area-inset-left,0px)) calc(32px + env(safe-area-inset-bottom,0px));
 }
+.site-foot .in{max-width:1120px; margin:0 auto; display:flex; flex-wrap:wrap; gap:6px 24px; justify-content:space-between}
 
 @media (max-width:640px){
   body{font-size:16px}
-  .masthead{padding-top:16px}
-  .page{padding-top:32px; gap:52px}
+  .page{padding-top:36px; gap:44px}
+  .masthead nav{gap:0 16px; font-size:14px}
 }
 @media (prefers-reduced-motion: reduce){
-  *{animation:none!important; transition:none!important}
+  *{animation:none!important; transition:none!important; scroll-behavior:auto!important}
 }
-.note{color:var(--mist); font-size:15px; max-width:720px}
-section > p{max-width:720px}

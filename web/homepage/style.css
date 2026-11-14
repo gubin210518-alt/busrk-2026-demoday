@@ -1,30 +1,30 @@
 /* 부착도·배선도 화면 전용. 색과 글꼴은 site.css에서 가져온다.
    레이아웃: 탭(3D 부착도 / 배선도) 아래에 해당 화면, 그 아래에 두 화면이 함께 쓰는 부품 목록과 상세 설명 */
 :root{
-  --stage:#DCEAF0; --grid:#A9C4CF;
+  --stage:#F2F5F7; --grid:#CBD6DC;
   --sig:#2259c9; --p5:#cf3a31; --p33:#c26a12; --gnd:#3a434e; --board:#e3f1ea; --boardline:#1d7353; --tagtext:#ffffff;
   --font-mono:var(--font-code);
 }
-.wrap{max-width:1180px; margin:0 auto; padding:40px 0 64px; display:flex; flex-direction:column; gap:22px}
+.wrap{max-width:1120px; margin:0 auto; padding:48px 22px 72px; display:flex; flex-direction:column; gap:22px}
 .panel{display:flex; flex-direction:column; gap:16px}
 .intro{display:flex; flex-direction:column; gap:14px; margin-bottom:6px}
-.intro h1{font-size:clamp(36px,6vw,64px)}
-.sub{margin:0; color:var(--deep); max-width:44em; font-size:18px}
+.intro h1{font-size:clamp(40px,6.4vw,72px)}
+.sub{margin:0; color:var(--gray); max-width:36em; font-size:20px; line-height:1.5; font-weight:500}
 input:focus-visible{outline:3px solid var(--berry); outline-offset:2px}
 
 .tabs{display:flex; gap:28px; border-bottom:1px solid var(--rule)}
 .tab{
-  border:0; background:transparent; padding:10px 0 9px; cursor:pointer; font-family:var(--font-display); font-size:22px; font-weight:600;
+  border:0; background:transparent; padding:10px 0 9px; cursor:pointer; font-size:20px; font-weight:700; letter-spacing:-.02em;
   color:var(--mist); border-bottom:4px solid transparent; margin-bottom:-1px; min-height:44px;
 }
-.tab[aria-selected="true"]{color:var(--deep); border-bottom-color:var(--berry)}
+.tab[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--ink)}
 .tab:hover{color:var(--ink)}
 
 .bar{display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center}
 .seg{display:flex; flex-wrap:wrap; gap:6px}
 .lab{font-size:14px; font-weight:600; color:var(--mist)}
 .tg{
-  border:1px solid var(--rule); background:var(--paper); padding:6px 13px; border-radius:3px; cursor:pointer;
+  border:1px solid var(--hair); background:#fff; padding:6px 15px; border-radius:999px; cursor:pointer;
   font-size:14.5px; min-height:38px;
 }
 .tg:hover{border-color:var(--deep)}
@@ -34,7 +34,7 @@ input:focus-visible{outline:3px solid var(--berry); outline-offset:2px}
 .dims label{display:flex; flex-direction:column; gap:2px; font-size:13px; color:var(--muted)}
 .dims input{
   width:6.2em; font:inherit; font-family:var(--font-mono); font-variant-numeric:tabular-nums; color:var(--ink);
-  background:var(--paper); border:1px solid var(--rule); border-radius:3px; padding:6px 8px; min-height:38px;
+  background:#fff; border:1px solid var(--hair); border-radius:10px; padding:6px 10px; min-height:40px;
 }
 .dims .out{font-size:13.5px; color:var(--muted); flex:1 1 220px; min-width:0}
 .dims .out b{color:var(--ink); font-weight:600}
@@ -42,7 +42,7 @@ input:focus-visible{outline:3px solid var(--berry); outline-offset:2px}
 
 .stage{
   position:relative; width:100%; height:clamp(400px,64vh,660px); background:var(--stage);
-  border:1px solid var(--rule); border-radius:4px; overflow:hidden;
+  border:0; border-radius:20px; overflow:hidden;
 }
 .stage canvas{display:block; width:100%; height:100%; touch-action:none}
 #pins{position:absolute; inset:0; pointer-events:none; overflow:hidden}
@@ -59,7 +59,7 @@ input:focus-visible{outline:3px solid var(--berry); outline-offset:2px}
 .status{margin:0; max-width:90ch}
 .status small{display:block; color:var(--muted)}
 
-.sheet{background:var(--paper); border:1px solid var(--rule); border-radius:4px; overflow-x:auto; margin:0}
+.sheet{background:var(--snow); border:0; border-radius:20px; overflow-x:auto; margin:0}
 .sheet svg{display:block; width:100%; height:auto}
 .sheet svg.wide{min-width:780px}
 .sheet svg.tall{display:none; max-width:460px; margin:0 auto}
@@ -116,25 +116,25 @@ figcaption{padding:10px 16px 12px; color:var(--muted); font-size:13.5px; border-
 .sheet[data-k="pw"] .ov[data-k="pw"], .sheet[data-k="ds"] .ov[data-k="ds"], .sheet[data-k="reed"] .ov[data-k="reed"], .sheet[data-k="oled"] .ov[data-k="oled"], .sheet[data-k="led"] .ov[data-k="led"], .sheet[data-k="buz"] .ov[data-k="buz"], .sheet[data-k="servo"] .ov[data-k="servo"], .sheet[data-k="mos"] .ov[data-k="mos"]{display:inline}
 .ovl{stroke-width:4.4; fill:none; stroke-linejoin:round; stroke-linecap:round}
 .pring{fill:none; stroke:var(--hot); stroke-width:2.6}
-.wstep{border-top:4px solid var(--deep); padding:16px 0 4px; margin-top:16px}
-.wstep h3{margin:0 0 6px; font-size:21px}
+.wstep{border-top:1px solid var(--ink); padding:16px 0 4px; margin-top:16px}
+.wstep h3{margin:0 0 6px; font-size:22px}
 .wstep p{margin:0 0 10px; color:var(--mist); font-size:15px}
 .wstep ol{margin:0; padding-left:1.4em; display:flex; flex-direction:column; gap:4px}
 .wstep b{font-weight:700}
 
 .cols{display:grid; grid-template-columns:minmax(0,5fr) minmax(0,6fr); gap:18px; align-items:start}
 @media (max-width:860px){ .cols{grid-template-columns:minmax(0,1fr)} }
-ol.parts{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0; max-width:none; border-top:2px solid var(--deep); border-bottom:1px solid var(--rule)}
+ol.parts{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0; max-width:none; border-top:1px solid var(--ink); border-bottom:1px solid var(--rule)}
 ol.parts li + li{border-top:1px solid var(--rule)}
 ol.parts button{display:flex; gap:14px; width:100%; text-align:left; background:transparent; border:0; padding:12px 10px; cursor:pointer; align-items:flex-start}
-ol.parts button:hover{background:var(--ice)}
-ol.parts button[aria-current="true"]{background:var(--ice); box-shadow:inset 4px 0 0 var(--berry)}
-.n{flex:none; width:28px; font-family:var(--font-display); font-size:20px; font-weight:700; line-height:1.3; color:var(--deep); font-variant-numeric:tabular-nums}
+ol.parts button:hover{background:var(--snow)}
+ol.parts button[aria-current="true"]{background:var(--snow); box-shadow:inset 3px 0 0 var(--ink)}
+.n{flex:none; width:28px; font-size:17px; font-weight:800; line-height:1.3; color:var(--deep); font-variant-numeric:tabular-nums}
 .t{display:flex; flex-direction:column; min-width:0}
 .t b{font-weight:600}
 .t i{font-style:normal; color:var(--mist); font-size:14.5px}
-.card{border-top:2px solid var(--deep); padding:16px 0 0; position:sticky; top:12px; display:flex; flex-direction:column; gap:14px}
-.card h2{display:flex; gap:12px; align-items:baseline; margin:0; padding:0; border:0; font-size:26px}
+.card{border-top:1px solid var(--ink); padding:16px 0 0; position:sticky; top:12px; display:flex; flex-direction:column; gap:14px}
+.card h2{display:flex; gap:12px; align-items:baseline; margin:0; padding:0; border:0; font-size:28px}
 .card dl{margin:0; display:grid; grid-template-columns:4.4em minmax(0,1fr); gap:10px 14px}
 .card dt{font-size:14px; font-weight:600; color:var(--mist); padding-top:2px}
 .card dd{margin:0; overflow-wrap:anywhere}
@@ -144,6 +144,6 @@ ul.notes,ol.checks{margin:0; padding-left:1.3em; display:flex; flex-direction:co
 ol.checks b{font-weight:600}
 .warn{color:var(--hot)}
 /* 상세 설명 안의 이동 버튼: site.css의 .go(진한 버튼)와 이름이 겹쳐서 다시 맞춘다 */
-.card .tg.go{background:transparent; color:var(--deep); box-shadow:inset 0 0 0 2px var(--deep); border:0; font-weight:600; padding:8px 16px; min-height:44px}
-.card .tg.go:hover{background:var(--deep); color:#fff}
+.card .tg.go{background:var(--ink); color:#fff; box-shadow:none; border:0; font-weight:600; padding:10px 20px; min-height:44px; border-radius:999px}
+.card .tg.go:hover{background:#2C3238; color:#fff}
 #p-wire table{min-width:760px}
