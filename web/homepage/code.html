@@ -6,38 +6,40 @@
 <title>소스코드 | 예냉박스</title>
 <meta name="description" content="식품의 골든타임을 지키는 예냉박스 ESP32 소스코드: 부품 점검, 반복 동작 시험, 팬 시험, AI 전체 동작 코드, 시연 모드">
 <link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="site.css">
 <style>
-section > h2{margin-top:4px}
-.codebox{background:var(--surface); border:1px solid var(--ink); border-radius:var(--r); overflow:hidden}
-.codebar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; padding:8px 12px; border-bottom:1px solid var(--ink)}
-.codebar .fn{font-family:var(--font-px); font-size:12px}
-.codebar .acts{display:flex; gap:6px}
-.btn{font:inherit; font-size:14px; font-weight:600; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:var(--r-s); padding:6px 14px; min-height:38px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center}
-.btn:hover{border-color:var(--ink); background:var(--surface2)}
-pre{margin:0; padding:16px; overflow:auto; max-height:520px; font-family:var(--font-code); font-size:13px; line-height:1.6; tab-size:2; background:var(--oled); color:#dcefff; word-break:normal}
-details > summary{cursor:pointer; padding:10px 12px; font-size:14.5px; font-weight:600}
-details[open] > summary{border-bottom:1px solid var(--ink)}
+.intro{display:flex; flex-direction:column; gap:16px}
+.intro h1{font-size:clamp(40px,6.4vw,72px)}
+section > h2{font-size:clamp(26px,3.4vw,36px); margin-top:8px}
+.codebox{background:var(--foam); border:3px solid var(--foam-edge); border-radius:18px; overflow:hidden}
+.codebar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; padding:12px 16px}
+.codebar .fn{font-family:var(--font-code); font-size:14.5px; font-weight:600}
+.codebar .acts{display:flex; gap:8px}
+.btn{font:inherit; font-size:14.5px; font-weight:600; color:var(--ink); background:#fff; border:1px solid var(--hair); border-radius:999px; padding:7px 16px; min-height:40px; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center}
+.btn:hover{border-color:var(--ink)}
+pre{margin:0; padding:18px; overflow:auto; max-height:520px; font-family:var(--font-code); font-size:13.5px; line-height:1.6; tab-size:2; background:var(--cellar); color:#E3E8EB; word-break:normal}
+details > summary{cursor:pointer; padding:12px 16px; color:var(--ink); font-size:15px; font-weight:600; border-top:1px solid var(--hair)}
 </style>
 </head>
 <body>
-<header class="in face compact">
-  <div class="oled">
-    <div class="oled-bar"><span>예냉박스 · 팀 부스럭</span><span class="leds" role="img" aria-label="신호등 초록 켜짐"><i class="r"></i><i class="y"></i><i class="g on"></i></span></div>
-    <div class="oled-body">
-      <h1>소스코드</h1>
-      <p class="sub">ESP32에 올리는 아두이노 코드예요.</p>
-    </div>
-  </div>
-</header>
-<div class="menubar"><nav class="in" aria-label="페이지"><div class="menu">
+<header class="masthead">
+  <div class="in">
+    <a class="mark" href="about.html">예냉박스</a>
+    <nav aria-label="페이지">
       <a href="about.html">소개</a>
       <a href="index.html">부착도와 배선도</a>
       <a href="code.html" aria-current="page">소스코드</a>
       <a href="https://busrk-ai-studio.vercel.app" target="_blank" rel="noopener">AI 시뮬레이터</a>
-</div></nav></div>
+    </nav>
+  </div>
+</header>
 
 <main class="page">
+  <div class="intro">
+    <h1>소스코드</h1>
+    <p class="lead">ESP32에 올리는 아두이노 코드예요.</p>
+  </div>
 
   <section>
     <h2>먼저 준비</h2>
@@ -151,5 +153,7 @@ if(dd) dd.addEventListener('click',function(){
   var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'})); a.download='precool_ai_demo.ino'; a.click();
 });
 </script>
+<div class="thermo" id="thermo" aria-hidden="true"><span class="k"><i></i><span class="kt">식품칸 · 식히는 중</span></span><b class="tv">25.0℃</b><span class="tm">수확 후 0분</span><span class="bar"><b></b></span></div>
+<script src="cool.js"></script>
 </body>
 </html>

@@ -148,42 +148,14 @@ ol.checks b{font-weight:600}
 .card .tg.go:hover{background:#2C3238; color:#fff}
 #p-wire table{min-width:760px}
 
-/* ===== 디자인 v3: 상자 표시부 같은 화면 (site.css와 짝) ===== */
-.wrap{max-width:1180px; padding:24px max(16px, env(safe-area-inset-left,0px)) 64px; gap:20px}
-/* 3D/배선도 고르기: 두 칸짜리 스위치 */
-.tabs{display:inline-grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:3px; padding:3px; border:1px solid var(--ink); border-radius:var(--r); background:var(--surface); align-self:flex-start; border-bottom:1px solid var(--ink)}
-.tab{font-family:var(--font-px14); font-size:15px; font-weight:400; letter-spacing:0; color:var(--ink); border:0; border-radius:var(--r-s); margin:0; padding:8px 22px; min-height:40px}
-.tab[aria-selected="true"]{background:var(--oled); color:var(--oled-ink)}
-.tab:hover:not([aria-selected="true"]){background:var(--surface2)}
-.lab{font-family:var(--font-px); font-size:11px; font-weight:400; color:var(--muted)}
-.tg{border:1px solid var(--line); background:var(--surface); border-radius:var(--r-s); font-size:14px; min-height:36px; padding:6px 12px}
-.tg:hover{border-color:var(--ink)}
-.tg[aria-pressed="true"]{background:var(--oled); border-color:var(--ink); color:var(--oled-ink)}
-.dims{background:var(--surface); border:1px solid var(--ink); border-radius:var(--r); padding:12px 16px}
-.dims label{font-family:var(--font-px); font-size:11px}
-.dims input{border:1px solid var(--line); border-radius:var(--r-s); background:#fff; font-size:14px}
-.bar{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:10px 14px}
-.stage{background:var(--surface2); border:1px solid var(--ink); border-radius:var(--r)}
-.pin{border-radius:3px; width:24px; height:24px; line-height:20px; background:var(--oled); color:var(--oled-ink); border:2px solid var(--surface); font-family:var(--font-px); font-size:11px; box-shadow:none}
-.pin.sel{width:28px; height:28px; line-height:24px; background:var(--berry); color:#fff}
-.hint{font-family:var(--font-px); font-size:11px; background:var(--surface); border:1px solid var(--line); padding:2px 8px; border-radius:2px}
-.status{border-left:4px solid var(--ink); background:var(--surface); padding:8px 12px}
-.sheet{background:var(--surface); border:1px solid var(--ink); border-radius:var(--r)}
-figcaption{border-top-color:var(--ink)}
-.wstep{border-top:2px solid var(--ink)}
-.wstep h3{font-size:18px}
-.panel section > h2,.panel h2{margin-top:8px}
-ol.parts{background:var(--surface); border:1px solid var(--ink); border-radius:var(--r)}
-ol.parts li + li{border-top:1px solid var(--line2)}
-ol.parts button:hover{background:var(--surface2)}
-ol.parts button[aria-current="true"]{background:var(--oled); color:var(--oled-ink); box-shadow:none}
-ol.parts button[aria-current="true"] .t i{color:inherit; opacity:.8}
-.n{width:24px; height:22px; flex:none; display:inline-flex; align-items:center; justify-content:center; border-radius:2px; background:var(--ink); color:var(--surface); font-family:var(--font-px); font-size:11px; font-weight:400}
-ol.parts button[aria-current="true"] .n{background:var(--oled-ink); color:var(--oled)}
-.card{background:var(--surface); border:1px solid var(--ink); border-radius:var(--r); padding:16px 18px; top:72px}
-.card h2{font-family:var(--font-px); font-weight:700; font-size:20px}
-.card dt{font-family:var(--font-px); font-size:11px; font-weight:400}
-.card .tg.go{border-radius:var(--r-s); background:var(--ink); color:var(--surface)}
-.card .tg.go:hover{background:var(--oled); color:var(--oled-ink)}
-.face .sub{font-size:16px; font-weight:400; max-width:44ch; line-height:1.7}
-.draw figcaption{border:0; padding:0; display:block; text-align:center; font-family:var(--font-px); font-size:11px}
+/* v4: 스티로폼 면 */
+.stage{background:#F4F8FA; border:3px solid var(--foam-edge)}
+.sheet{background:var(--foam); border:3px solid var(--foam-edge)}
+.dims,.bar{border-color:var(--hair)}
+.tg{background:var(--foam)}
+.tg[aria-pressed="true"]{background:var(--ink); border-color:var(--ink); color:#fff}
+.tab[aria-selected="true"]{border-bottom-color:var(--chill)}
+ol.parts{background:var(--foam); border:3px solid var(--foam-edge); border-radius:20px; overflow:hidden}
+ol.parts button[aria-current="true"]{background:#EEF6FA; box-shadow:inset 4px 0 0 var(--chill)}
+.card{background:var(--foam); border:3px solid var(--foam-edge); border-radius:20px; padding:20px 22px}
+.tablebox{background:var(--foam); border:3px solid var(--foam-edge); border-radius:18px; padding:0 18px}
