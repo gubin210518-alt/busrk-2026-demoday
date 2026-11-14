@@ -64,6 +64,7 @@ main{padding:26px 28px 48px;max-width:1400px;margin:0 auto}
 .tile.st-g{background:var(--leaf-soft);border-color:#B5E3C8}.tile.st-g #vL{color:var(--leaf)}
 .tile.st-y{background:var(--amber-soft);border-color:#F6DE94}.tile.st-y #vL{color:#8A5E00}
 .tile.st-r{background:var(--berry-soft);border-color:#FFC9D1}.tile.st-r #vL{color:var(--berry)}
+.tile.nobg{background:#fff;border-color:var(--hair)}
 .tile{transition:background .4s,border-color .4s}
 .tile .k{font-size:14px;color:var(--gray);font-weight:600}
 .tile .v{font-size:40px;font-weight:800;color:var(--ink);margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap;letter-spacing:-.035em;line-height:1.15}
@@ -137,9 +138,9 @@ main a{color:var(--chill)}
 <!-- 실시간 -->
 <section class="panel on" id="tab-live">
   <div class="grid g4">
-    <div class="tile berry"><div class="k">식품칸 온도</div><div class="v" id="vB">--.-℃</div><div class="s" id="vBs">목표 1℃</div></div>
-    <div class="tile chill"><div class="k">냉기실 온도</div><div class="v" id="vC">--.-℃</div><div class="s" id="vCs">팬 -- · 뚜껑 --</div></div>
-    <div class="tile amber"><div class="k">수확 후 경과</div><div class="v" id="vT">0:00</div><div class="s" id="vTs">제한 60분</div></div>
+    <div class="tile berry nobg"><div class="k">식품칸 온도</div><div class="v" id="vB">--.-℃</div><div class="s" id="vBs">목표 1℃</div></div>
+    <div class="tile chill nobg"><div class="k">냉기실 온도</div><div class="v" id="vC">--.-℃</div><div class="s" id="vCs">팬 -- · 뚜껑 --</div></div>
+    <div class="tile amber nobg"><div class="k">수확 후 경과</div><div class="v" id="vT">0:00</div><div class="s" id="vTs">제한 60분</div></div>
     <div class="tile status" id="stTile"><div class="lights"><i class="r" id="lR"></i><i class="y" id="lY"></i><i class="g" id="lG"></i></div>
       <div><div class="k">박스 판단</div><div class="v" style="font-size:24px" id="vL">대기</div><div class="s" id="vLs">연결하거나 시뮬레이션을 시작하세요</div></div></div>
   </div>
