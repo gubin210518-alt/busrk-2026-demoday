@@ -116,12 +116,11 @@
     <div class="in stack center">
       <h1 id="h-top">예냉박스</h1>
       <p class="tag">수확한 딸기, <em>1시간</em> 안에 1℃까지.</p>
-      <p class="lead">밭에서 바로 식히고, 다 식을 때까지 남은 시간을 AI가 미리 알려 주는 들고 다니는 예냉박스예요.</p>
+      <p class="lead">밭에서 바로 식히고, 남은 시간을 AI가 알려 줘요.</p>
       <div class="gos">
         <a class="go" href="index.html">3D로 살펴보기</a>
         <a class="go line" href="https://busrk-ai-studio.vercel.app" target="_blank" rel="noopener">AI 시뮬레이터</a>
       </div>
-      <p class="made">신정고 매니악코더 팀 부스럭, 2026 AI동행 피지컬 AI 분과 데모데이</p>
       <figure>
         <img src="img/box3d.webp" width="640" height="640" alt="예냉박스 3D 모형. 스티로폼 상자 안이 칸막이로 냉기실과 식품칸으로 나뉘고, 앞쪽 표시부에 신호등 LED와 OLED 화면, ESP32 보드가 붙어 있어요.">
       </figure>
@@ -131,23 +130,21 @@
   <section class="band snow" aria-labelledby="h-why">
     <div class="in stack">
       <h2 id="h-why" class="center" style="text-align:center">딸기는 수확한 뒤에도<br>밭의 열을 품고 있어요.</h2>
-      <p class="lead" style="text-align:center; margin:0 auto 44px">빨리 식히지 않으면 금방 물러요. 그런데 작은 농가는 큰 예냉 설비를 두기 어려워요.</p>
+      <p class="lead" style="text-align:center; margin:0 auto 44px">작은 농가는 큰 예냉 설비를 두기 어려워요.</p>
       <div class="stats">
-        <div><b>1시간</b><span>수확한 딸기를 식히기 시작해야 하는 시간</span></div>
-        <div><b>1℃</b><span>예냉박스가 목표로 하는 식품칸 온도</span></div>
-        <div><b class="berry">20%</b><span>25℃에서 냉각이 2시간 늦어지면 줄어드는 상품성</span></div>
+        <div><b>1시간</b><span>식히기 시작해야 하는 시간</span></div>
+        <div><b>1℃</b><span>목표 온도</span></div>
+        <div><b class="berry">20%</b><span>냉각이 2시간 늦을 때 잃는 상품성</span></div>
       </div>
-      <p class="quiet" style="text-align:center; margin-top:28px">출처: 캐나다 온타리오 농식품부(OMAFRA) 딸기 냉각 안내, Mitchell 외(1996)</p>
+      <p class="quiet" style="text-align:center; margin-top:28px">출처: 캐나다 온타리오 농식품부(OMAFRA), Mitchell 외(1996)</p>
     </div>
   </section>
 
   <section class="band" aria-labelledby="h-real">
     <div class="in stack center">
-      <h2 id="h-real">스티로폼 상자 하나로<br>직접 만들었어요.</h2>
-      <p class="lead">아이스팩을 넣은 냉기실과 딸기를 넣는 식품칸을 칸막이로 나누고, 앞면에 ESP32와 센서, 표시부를 달았어요.</p>
+      <h2 id="h-real">직접 만든 시제품</h2>
       <figure class="photo">
         <img src="img/prototype.jpg" width="800" height="547" loading="lazy" alt="실제로 만든 예냉박스 시제품. 흰 스티로폼 상자 앞면에 ESP32 보드와 신호등 LED가 붙어 있고, 여러 색 전선이 연결되어 있어요. 옆에 뚜껑이 놓여 있어요.">
-        <figcaption>지금 만든 시제품이에요. 실측 실험을 앞두고 배선을 정리하는 중이에요.</figcaption>
       </figure>
     </div>
   </section>
@@ -159,17 +156,17 @@
         <li>
           <span class="k">1. 감지</span>
           <h3>온도와 뚜껑을 재요</h3>
-          <p>방수 온도센서 2개가 식품칸과 냉기실 공기 온도를 재고, 리드스위치로 뚜껑이 열렸는지 알아요. 전원을 켠 순간부터 수확 후 시간을 세요.</p>
+          <p>온도센서 2개와 리드스위치</p>
         </li>
         <li>
           <span class="k">2. 예측</span>
           <h3>1시간 안에 식을지 미리 알아요</h3>
-          <p>AI가 2분 뒤 온도를 예측하고, 이를 반복해 1℃까지 남은 시간을 계산해요. 처음 2분과 센서 오류 때는 뉴턴 냉각 법칙으로 계산해요.</p>
+          <p>AI가 1℃까지 남은 시간을 계산</p>
         </li>
         <li>
           <span class="k">3. 행동</span>
           <h3>바로 식히고 알려요</h3>
-          <p>서보가 댐퍼를 열고 팬이 찬 공기를 식품칸으로 보내요. 0℃ 아래로 내려가면 팬을 꺼서 얼지 않게 하고, OLED와 신호등 LED, 부저로 알려요.</p>
+          <p>댐퍼와 팬으로 냉기 순환, 신호등·OLED·부저로 알림</p>
         </li>
       </ol>
     </div>
@@ -178,7 +175,7 @@
   <section class="band dark" aria-labelledby="h-ai">
     <div class="in stack center">
       <h2 id="h-ai">1℃까지 몇 분 남았는지,<br>AI가 미리 알려 줘요.</h2>
-      <p class="lead">아이스팩이 녹아 냉기가 약해지는 것, 딸기가 공기보다 늦게 식는 것처럼 계산식 하나로는 놓치는 변화를 실험 기록에서 배워요.</p>
+      <p class="lead">아이스팩이 녹아 냉기가 약해지는 변화까지 기록에서 배워요.</p>
       <figure class="curve" id="curve">
         <svg class="wide" viewBox="-20 0 1220 410" role="img" aria-labelledby="cv-t">
           <title id="cv-t">수확 직후 25℃인 딸기를 1시간 안에 1℃까지 식히는 목표 냉각 곡선. 식히지 않으면 25℃ 그대로 남아요.</title>
@@ -225,13 +222,13 @@
           </g>
         </svg>
         <ul class="signals" aria-label="박스 신호등 뜻">
-          <li><span class="dot g" aria-hidden="true"></span>초록: 1℃ 도달, 출하 준비 완료</li>
-          <li><span class="dot y" aria-hidden="true"></span>노랑: 1시간 안에 도달할 것 같아요</li>
-          <li><span class="dot r" aria-hidden="true"></span>빨강: 1시간을 넘길 위험이 있어요</li>
+          <li><span class="dot g" aria-hidden="true"></span>초록: 완료</li>
+          <li><span class="dot y" aria-hidden="true"></span>노랑: 식히는 중</li>
+          <li><span class="dot r" aria-hidden="true"></span>빨강: 늦을 위험</li>
         </ul>
-        <figcaption class="quiet">곡선은 목표를 보여 주는 그림이에요. 실제로 1℃까지 내려가는지는 실측 실험으로 확인하고, 결과에 맞춰 목표 온도를 코드에서 바꿀 수 있어요. 지금 들어 있는 AI는 시뮬레이션으로 학습 구조를 검증한 것이고, 실측 기록이 쌓이면 다시 학습해요.</figcaption>
+        <figcaption class="quiet">곡선은 목표를 나타낸 그림이에요. 실측 데이터가 아니에요.</figcaption>
       </figure>
-      <a class="go" href="https://busrk-ai-studio.vercel.app" target="_blank" rel="noopener" style="align-self:center">AI 시뮬레이터에서 직접 돌려 보기</a>
+      <a class="go" href="https://busrk-ai-studio.vercel.app" target="_blank" rel="noopener" style="align-self:center">AI 시뮬레이터 열기</a>
     </div>
   </section>
 
@@ -239,89 +236,56 @@
     <div class="in stack">
       <h2 id="h-diff">무엇이 다를까</h2>
       <div class="diffs">
-        <div><h3>밭에서 바로 쓰는 크기</h3><p>강제통풍 예냉은 보통 냉장 공간과 송풍 설비가 필요해요. 예냉박스는 아이스박스 하나 크기라 수확 현장과 이동 중에 바로 써요.</p></div>
-        <div><h3>식히기와 기록을 한 박스에</h3><p>온도 기록계는 재기만 하고, 예냉 설비는 식히기만 해요. 이 박스는 식히면서 30초마다 온도를 기록해요.</p></div>
-        <div><h3>"몇 분 뒤 다 식는다"를 알려 줘요</h3><p>지금 온도만 보여 주지 않고, 목표 온도까지 남은 시간과 1시간 안에 될지를 미리 알려 줘요.</p></div>
-        <div><h3>AI가 필요한 이유를 직접 보여 줘요</h3><p>직선 추세, 뉴턴 냉각 계산식, 학습 모델 세 가지를 같은 실험 기록으로 비교해요.</p></div>
+        <div><h3>들고 다니는 크기</h3><p>아이스박스 하나로 밭에서 바로 써요.</p></div>
+        <div><h3>식히기와 기록을 한 번에</h3><p>식히면서 30초마다 온도를 기록해요.</p></div>
+        <div><h3>남은 시간을 알려 줘요</h3><p>지금 온도가 아니라 다 식을 때까지 남은 시간을 보여 줘요.</p></div>
+        <div><h3>AI와 계산식을 비교해요</h3><p>직선 추세, 뉴턴 냉각 법칙, AI를 같은 기록으로 비교해요.</p></div>
       </div>
-      <p class="note" style="margin-top:12px">팬으로 찬 공기를 돌려 식히는 원리 자체는 새롭지 않아요. 다른 점은 작게 만들고, 식히기와 기록과 예측을 한 박스에 묶은 조합이에요. 국내 제품은 아직 다 찾아보지 못했어요.</p>
     </div>
   </section>
 
   <section class="band snow" aria-labelledby="h-safe">
     <div class="in stack">
       <h2 id="h-safe">판단은 사람이 해요.</h2>
-      <div class="two">
-        <div>
-          <h3>품질 판정은 하지 않아요</h3>
-          <ul>
-            <li>참고 표시만 하고, 출하나 판매 여부는 농가가 판단해요.</li>
-            <li>센서가 고장 나면 "측정 불가"로 표시하고 팬을 멈춰요.</li>
-            <li>식품칸이 0℃ 아래로 내려가면 팬을 꺼서 딸기가 얼지 않게 해요.</li>
-            <li>센서는 딸기에 직접 닿지 않게 하고, 딸기 옆 공기 온도로 짐작해요.</li>
-          </ul>
-        </div>
-        <div>
-          <h3>누구나 확인할 수 있게</h3>
-          <ul>
-            <li>개인정보는 모으지 않고, 임시 와이파이에는 비밀번호를 걸어요.</li>
-            <li>빛과 소리를 함께 써서 휴대폰이 없어도 박스만으로 확인돼요.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="band" aria-labelledby="h-goal">
-    <div class="in stack">
-      <h2 id="h-goal">이렇게 되면 성공이에요.</h2>
       <ul>
-        <li>냉각 성능: 실온의 딸기를 넣고 1시간 동안 식품칸 온도가 얼마나 내려가는지 기록해요. 목표 1℃에 닿는지, 몇 분이 걸리는지 숫자로 보여 줘요.</li>
-        <li>미리 경고: 1시간 안에 못 식는 회차를 10회 중 8회 이상 미리 경고해요.</li>
-        <li>헛경고: 실제로는 제때 식었는데 늦는다고 경고한 회차는 10회 중 2회 이하예요.</li>
-        <li>측정 정확도: 기준 온도계와 비교한 오차가 ±1℃ 이내예요.</li>
-        <li>예측 정확도: 학습 모델의 도달 시간 예측 오차가 직선 추세와 뉴턴 냉각 계산식보다 작아야 해요. 3회 이상 반복해 확인해요.</li>
-      </ul>
-      <h3 style="margin-top:28px">앞으로 개선할 점</h3>
-      <ul>
-        <li>판매하지 않을 샘플 딸기 하나에 센서를 꽂아 과육 온도를 직접 재는 방법을 검토해요.</li>
-        <li>아이스팩만으로 충분히 빨리 식는지 실험해 보고, 부족하면 냉기량을 늘리는 방법을 찾아요.</li>
-        <li>딸기 말고 다른 작물도 기준 온도만 바꿔 쓸 수 있게 만들어요.</li>
+        <li>예측은 참고용이고, 출하 판단은 농가가 해요.</li>
+        <li>센서가 고장 나면 "측정 불가"로 표시하고 팬을 멈춰요.</li>
+        <li>0℃ 아래로 내려가면 팬을 꺼서 얼지 않게 해요.</li>
+        <li>개인정보는 모으지 않아요.</li>
       </ul>
     </div>
   </section>
 
-  <section class="band snow" aria-labelledby="h-sdg">
+  <section class="band" aria-labelledby="h-sdg">
     <div class="in stack">
       <h2 id="h-sdg">버려지는 딸기를 줄여요.</h2>
       <div class="sdg">
-        <div><b>SDG 12</b><p>지속가능한 소비와 생산. 수확 직후 무르고 상해 버려지는 딸기, 곧 식량 손실을 줄여요. FAO는 생산된 식품의 약 30%가 손실되거나 버려진다고 추정해요.</p></div>
-        <div><b>SDG 2</b><p>기아 종식. 작은 농가가 수확한 농산물을 더 많이 제값에 팔 수 있게 도와요.</p></div>
+        <div><b>SDG 12</b><p>지속가능한 소비와 생산. 무르고 상해 버려지는 딸기를 줄여요.</p></div>
+        <div><b>SDG 2</b><p>기아 종식. 작은 농가가 제값을 받게 도와요.</p></div>
       </div>
     </div>
   </section>
 
-  <section class="band" aria-labelledby="h-spec">
+  <section class="band snow" aria-labelledby="h-spec">
     <div class="in stack">
       <h2 id="h-spec">사양</h2>
       <div class="tablebox">
         <table>
           <thead><tr><th scope="col">부품</th><th scope="col">역할</th></tr></thead>
           <tbody>
-            <tr><td>ESP32 WROOM 보드 (HW-394, USB-C, 30핀)</td><td>센서 읽기, 예측, 팬과 댐퍼 제어, 기록</td></tr>
-            <tr><td>MRD068A 나사단자 확장보드</td><td>ESP32 핀을 나사단자로 꺼내 선을 단단히 고정</td></tr>
-            <tr><td>DS18B20 방수 온도센서 ×2</td><td>식품칸과 냉기실 공기 온도</td></tr>
+            <tr><td>ESP32 보드</td><td>예측과 제어</td></tr>
+            <tr><td>나사단자 확장보드</td><td>선 고정</td></tr>
+            <tr><td>DS18B20 방수 온도센서 ×2</td><td>온도 측정</td></tr>
             <tr><td>SG90 서보 + 폼보드 댐퍼</td><td>냉기실 창 여닫기</td></tr>
-            <tr><td>5V 쿨링팬 + MOSFET 모듈</td><td>찬 공기를 식품칸으로 순환</td></tr>
-            <tr><td>OLED, 신호등 LED, 부저</td><td>온도, 남은 시간, 경고 표시</td></tr>
+            <tr><td>5V 쿨링팬 + MOSFET 모듈</td><td>냉기 순환</td></tr>
+            <tr><td>OLED, 신호등 LED, 부저</td><td>알림</td></tr>
             <tr><td>리드스위치 모듈 + 자석</td><td>뚜껑 열림 감지</td></tr>
             <tr><td>스티로폼 상자, 아이스팩</td><td>본체와 냉기 공급</td></tr>
-            <tr><td>폼보드 칸막이, 뽁뽁이(에어캡)</td><td>냉기실과 식품칸 분리, 맞닿는 면 단열</td></tr>
-            <tr><td>탐침형 디지털 온도계</td><td>센서 보정, ±1℃ 검증</td></tr>
+            <tr><td>폼보드 칸막이, 뽁뽁이(에어캡)</td><td>칸 나누기, 단열</td></tr>
+            <tr><td>탐침형 디지털 온도계</td><td>센서 보정</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="quiet">재료 예산은 10만 원이고, 신청 목록 합계는 배송비를 빼고 70,300원이에요.</p>
       <div class="gos" style="margin-top:12px">
         <a class="go" href="index.html">부착도와 배선도 보기</a>
         <a class="go line" href="code.html">소스코드 보기</a>
@@ -329,7 +293,7 @@
     </div>
   </section>
 
-  <section class="band snow" aria-labelledby="h-ref" style="padding:64px 0">
+  <section class="band" aria-labelledby="h-ref" style="padding:64px 0">
     <div class="in stack">
       <h3 id="h-ref">참고 자료</h3>
       <ul class="quiet">
