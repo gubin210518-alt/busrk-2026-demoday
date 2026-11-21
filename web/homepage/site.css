@@ -141,3 +141,5 @@ td.num{font-variant-numeric:tabular-nums; white-space:nowrap}
 
 .site-foot{padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
 @media (max-width:640px){ .thermo .k,.thermo .bar{display:none} .thermo{padding:6px 11px; border-radius:12px} }
+.masthead nav a.apk{color:#fff; background:var(--ink); padding:6px 12px; border-radius:10px; font-weight:700}
+.masthead nav a.apk:hover{color:#fff; opacity:.9}
