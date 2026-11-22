@@ -110,7 +110,7 @@ html{scroll-padding-top:72px;scroll-behavior:smooth}
 </div></header>
 
 <nav class="scroll" aria-label="목차">
-<a href="#why">왜</a><a href="#how">작동</a><a href="#parts">부품·배선</a><a href="#ai">AI</a><a href="#app">앱</a><a href="#arch">구조</a><a href="#fw">펌웨어 상세</a><a href="#algo">예측 계산</a><a href="#newton">뉴턴과 AI</a><a href="#model">모델 학습</a><a href="#ble">블루투스</a><a href="#log">기록</a><a href="#appdev">앱 구조</a><a href="#demo">시연</a><a href="#day">당일</a><a href="#qa">예상 질문</a><a href="#fix">문제 해결</a><a href="#files">파일</a>
+<a href="#why">왜</a><a href="#how">작동</a><a href="#parts">부품·배선</a><a href="#ai">AI</a><a href="#app">앱</a><a href="#arch">구조</a><a href="#fw">펌웨어 상세</a><a href="#algo">예측 계산</a><a href="#newton">뉴턴과 AI</a><a href="#model">모델 학습</a><a href="#impl">모델 구현</a><a href="#ble">블루투스</a><a href="#log">기록</a><a href="#appdev">앱 구조</a><a href="#demo">시연</a><a href="#day">당일</a><a href="#qa">예상 질문</a><a href="#fix">문제 해결</a><a href="#files">파일</a>
 </nav>
 
 <section id="why" class="band"><div class="wrap">
@@ -382,6 +382,61 @@ k = h × A ÷ (m × c)      (물체 안 온도가 고르다고 보는 단순화)
 </ol>
 <div class="note warn">펌웨어 주석에도 적혀 있듯, <b>이 상자(아이스팩)로 실제 1℃까지 내려가는지는 아직 실험 전</b>이에요. 질문을 받으면 "시연은 15℃ 목표로 동작을 보여 드리는 것이고, 1℃ 실측은 다음 단계"라고 답해요.</div>
 </div></section>
+<section id="impl" class="band"><div class="wrap">
+<h2>기술 상세 4-2. 모델 구현 (코드 수준)</h2>
+<p class="point">머신러닝 라이브러리는 하나도 쓰지 않았어요. 학습은 브라우저 JavaScript로, 예측은 ESP32의 C++로 직접 짰어요. 모델 종류는 표준화한 입력 4개를 쓰는 <b>선형 회귀에 릿지(L2) 정규화를 더한 것</b>이에요.</p>
+<h3>쓴 것과 안 쓴 것</h3>
+<table class="stack"><thead><tr><th>부분</th><th>언어·도구</th><th>외부 라이브러리</th></tr></thead><tbody>
+<tr><td>학습·평가·시뮬레이터 (<code>ai/core.js</code>)</td><td>JavaScript (브라우저·Node 공용)</td><td>없음. 행렬 계산, 연립방정식 풀이, 난수 생성까지 직접 구현</td></tr>
+<tr><td>AI 시뮬레이터 화면</td><td>HTML + JavaScript</td><td>없음. 박스 연결은 브라우저 내장 Web Serial API, 기록 보관은 브라우저 저장소(localStorage)</td></tr>
+<tr><td>펌웨어 예측 (<code>aiStep</code>, <code>aiEta</code>)</td><td>C++ (Arduino)</td><td>&lt;math.h&gt;만. TensorFlow Lite 같은 추론 엔진 없음</td></tr>
+<tr><td>펌웨어 나머지</td><td>C++ (Arduino)</td><td>OneWire, DallasTemperature, ESP32Servo, Adafruit SSD1306, Adafruit GFX, ESP32 내장 BLE·LittleFS</td></tr>
+<tr><td>안드로이드 앱</td><td>Kotlin + Jetpack Compose</td><td>AndroidX(Compose, Lifecycle, Activity). AI 계산은 앱에서 하지 않음</td></tr>
+</tbody></table>
+<p>딥러닝을 쓰지 않은 이유: 입력이 4개뿐이고, ESP32에서 인터넷 없이 바로 돌아야 하고, 가중치를 사람이 읽고 확인할 수 있어야 해서예요.</p>
+
+<h3>① 데이터 맞추기 (resample)</h3>
+<ul>
+<li>기록 간격이 제각각이라 <b>10초 격자</b>로 맞춰요. 사이 값은 앞뒤 기록을 직선으로 이어 채워요(선형 보간).</li>
+<li>뚜껑·팬 상태는 보간하지 않고 가까운 쪽 기록 값을 따라요.</li>
+</ul>
+<h3>② 학습 표본 만들기 (samples)</h3>
+<ul>
+<li>격자 i마다 <b>앞 2분(12칸)과 뒤 2분(12칸)</b> 모두 팬 켜짐·뚜껑 닫힘·값 정상일 때만 표본으로 써요.</li>
+<li>입력 x = [식품칸−냉기실, 냉기실, (식품칸 − 2분 전 식품칸)/2, (냉기실 − 2분 전 냉기실)/2]</li>
+<li>정답 y = 2분 뒤 식품칸 − 지금 식품칸, 2분 뒤 냉기실 − 지금 냉기실 (변화량을 맞히게 해요)</li>
+</ul>
+<h3>③ 표준화</h3>
+<p>입력마다 평균과 표준편차를 구해 z = (x − 평균) / 표준편차로 바꿔요. 단위가 다른 입력(℃와 ℃/분)을 같은 크기로 맞춰야 정규화가 공평하게 걸리고, 가중치끼리 비교할 수 있어요. 평균·표준편차도 모델에 같이 저장해 펌웨어에서 똑같이 바꿔요.</p>
+<h3>④ 릿지 회귀 (ridge)</h3>
+<pre>최소화:  Σ (y − w0 − w·z)²  +  λ · (w1² + w2² + w3² + w4²)
+닫힌 해:  (ZᵀZ + λI′) w = Zᵀy      (I′는 절편 w0 자리만 0, 절편은 벌점 없음)</pre>
+<ul>
+<li>λ(과적합 방지 값)는 기본 1이고, 시뮬레이터 화면에서 바꿀 수 있어요.</li>
+<li>5×5 연립방정식을 <b>부분 피벗 가우스 소거</b>로 직접 풀어요. 반복 학습(경사하강법) 없이 한 번에 답이 나와요.</li>
+<li>식품칸 변화 모델(wb)과 냉기실 변화 모델(wc)을 따로 하나씩, 모두 2개를 학습해요. 각각 가중치 5개(절편+4)예요.</li>
+<li>표본이 30개보다 적으면 학습을 거부해요.</li>
+<li>학습 오차는 2분 뒤 변화의 평균 절대 오차(MAE)로 보고해요. 지금 모델은 식품칸 0.064℃, 냉기실 0.055℃예요.</li>
+</ul>
+<h3>⑤ 남은 시간 계산 (etaAI)</h3>
+<p>모델로 2분 뒤 두 온도를 구하고, 그 결과로 기울기를 새로 만들어 다시 넣는 것을 반복해요. 목표를 지나는 칸에서는 비례로 쪼개 분을 구하고, 최대 90번(180분)까지 굴려요. 한 번에 0.005℃도 안 내려가면 "못 닿음"(−2)으로 끝내요. 펌웨어의 <code>aiEta()</code>와 시뮬레이터의 <code>etaAI()</code>는 같은 규칙이에요.</p>
+<h3>⑥ 평가 (evaluate)</h3>
+<ul>
+<li>실험이 5개 이상이면 5개 중 1개를 시험용으로 떼어 두고, 2~4개면 하나씩 빼고 학습해 뺀 것으로 시험(한 개씩 빼기 검증), 1개면 학습한 것으로 시험해요.</li>
+<li>목표에 실제로 닿은 시험 실험에서 30초마다 "남은 시간"을 AI·뉴턴·직선 세 방법으로 예측하고, 실제 남은 시간과의 차이를 평균내요.</li>
+<li><b>"못 닿음"으로 잘못 예측하면 180분 오차로 계산해요.</b> 뉴턴 방법은 냉기 평균이 목표 근처면 "못 닿음"을 내기 쉬워서, 뉴턴 92.0분이라는 큰 오차에는 이 벌점이 섞여 있을 수 있어요. 질문받으면 이 계산 방식도 같이 설명해요.</li>
+<li>AI가 두 방법보다 모두 작으면 "통과"로 표시해요. 지금 시뮬레이션 결과는 직선 추세보다 커서 "미통과"예요.</li>
+</ul>
+<h3>⑦ 펌웨어로 옮기기 (model.h)</h3>
+<pre>#define MODEL_READY 1
+#define MODEL_H_MIN 2.0f
+static const float MODEL_MEAN[4] = {…};   // 입력 평균
+static const float MODEL_STD[4]  = {…};   // 입력 표준편차
+static const float MODEL_WB[5]   = {…};   // 식품칸: 절편 + 가중치 4
+static const float MODEL_WC[5]   = {…};   // 냉기실: 절편 + 가중치 4</pre>
+<p>시뮬레이터가 이 파일을 만들어 주고, 펌웨어의 "학습 모델" 블록에 붙여 넣으면 끝이에요. 숫자 18개뿐이라 메모리를 거의 안 쓰고, 한 번 예측은 곱하기·더하기 몇십 번이라 ESP32에서 바로 끝나요.</p>
+</div></section>
+
 
 <section id="ble" class="band"><div class="wrap">
 <h2>기술 상세 5. 블루투스 통신 형식</h2>
